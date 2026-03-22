@@ -1,0 +1,40 @@
+.throw-area {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 600px;
+  margin: 2rem auto 0 auto;
+  border: 4px solid var(--gold);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: crosshair;
+  background: var(--bg-dark);
+}
+
+.target-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thrown-item {
+  position: absolute;
+  pointer-events: none;
+  font-size: 3rem;
+  animation: splat 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.item-inner {
+  filter: drop-shadow(0 0 15px rgba(0,0,0,0.9));
+}
+
+@keyframes splat {
+  0% { transform: translate(-50%, -50%) scale(5) rotate(0deg); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(var(--endScale)) rotate(var(--rot)); opacity: 1; }
+}
+
+.upload-label {
+  display: inline-block;
+  cursor: pointer;
+  margin-top: 2rem;
+}

@@ -1,0 +1,43 @@
+.wiki-section {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto 4rem auto;
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--border-glass);
+  margin-bottom: 1rem;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 1rem 0;
+  transition: color 0.3s;
+}
+
+.accordion-header:hover {
+  color: var(--apple-green);
+}
+
+.accordion-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.accordion-body {
+  padding: 0 0 1rem 0;
+  color: var(--text-muted);
+  animation: fadeIn 0.3s ease;
+}
+
+.icon {
+  color: var(--apple-green);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --apple-red: #8b0000;
+  --apple-green: #37eb3d;
+  --gold: #d4af37;
+  --bg-dark: #050505;
+  --stone: #111111;
+  --text-main: #f5f5dc;
+  --text-muted: #a0a090;
+  --border-glass: rgba(212, 175, 55, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .biblical-header {
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-top: 0;
+}
+
+.app-container {
+  min-height: 100vh;
+}
+
+/* Glass panel becomes Stone Panel */
+.glass-panel {
+  background: var(--stone);
+  border: 1px solid var(--border-glass);
+  border-radius: 4px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+
+/* Tab Navigation */
+.tab-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 2rem 0;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 1rem;
+}
+
+.tab-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-btn.active, .tab-btn:hover {
+  background: var(--gold);
+  color: var(--bg-dark);
+}
+
+.tab-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  padding-bottom: 5rem;
+}
+
+/* Base Gothic Buttons */
+.btn-gothic, .punish-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: block;
+  margin: 0 auto;
+}
+.btn-gothic:hover, .punish-btn:hover {
+  background: var(--gold);
+  color: #000;
+}
+
+/* Entrance Gate */
+.entrance-gate {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.gate-btn {
+  background: transparent;
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  padding: 1rem 3rem;
+  font-size: 2rem;
+  font-family: 'Cinzel', serif;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.gate-btn:hover {
+  background: var(--gold);
+  color: #000;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+/* Book Styles */
+.bayan-book {
+  padding: 2rem;
+  background: var(--stone);
+  border: 1px solid var(--border-glass);
+}
+
+.book-columns {
+  columns: 2;
+  column-gap: 3rem;
+}
+
+@media (max-width: 768px) {
+  .book-columns {
+    columns: 1;
+  }
+}
+
+.chapter-verse {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  break-inside: avoid;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

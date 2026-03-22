@@ -1,0 +1,37 @@
+.falling-apples-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1; /* Above background, below main content */
+  overflow: hidden;
+}
+
+.snowflake-apple {
+  position: absolute;
+  top: -10vh; /* Start slightly above the viewport */
+  user-select: none;
+  animation-name: fallAndRotate;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fallAndRotate {
+  0% {
+    transform: translateY(0) rotate(0deg) translateX(0);
+  }
+  25% {
+    transform: translateY(30vh) rotate(90deg) translateX(25px);
+  }
+  50% {
+    transform: translateY(60vh) rotate(180deg) translateX(-15px);
+  }
+  75% {
+    transform: translateY(90vh) rotate(270deg) translateX(20px);
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg) translateX(0);
+  }
+}
