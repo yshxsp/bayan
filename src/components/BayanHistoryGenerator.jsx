@@ -15,7 +15,7 @@ const BayanHistoryGenerator = () => {
       }
       const prompt = `Расскажи историю ${year} года в Баяностане. Пиши в стиле божественных рассказов в Библии, ветхозаветным и серьезным стилем, но с использованием абсурдного лора Баяна (Сумская область, Яблоки с глазами, продавец покрышек на Волгу Юрий Баянов, петухи, шиномонтаж, наезды разнорабочих, сленг "словить огрызок", "покрыть глянцем"). Речь самого Баяна должна быть в стиле "божественных цитат", то есть грубая, как у агрессивного разнорабочего из интернета, который жестко унижает собеседника (используй жесткий сленг, абсурдные угрозы про "уматузи", "остасывала всем народу", стейк и т.д., только уникально для этого года). Отвечай коротко, на 3-4 абзаца.`;
       
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
