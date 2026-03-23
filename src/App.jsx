@@ -17,14 +17,15 @@ import AppHeader from './components/AppHeader'
 import ChatModule from './components/ChatModule'
 import ProfileSection from './components/ProfileSection'
 import { supabase } from './supabaseClient'
+import { useSettings } from './hooks/useSettings'
 import './components/EntranceStyles.css'
 // import audio1 from './assets/audio/audio1.mp3'
 const audio1 = '/audio/audio1.mp3';
 
 function App() {
+  const [settings, setSettings] = useSettings();
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
-  const [isPlaying, setIsPlaying] = useState(false);
   const [user, setUser] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const audioDomRef = useRef(null);
@@ -41,13 +42,35 @@ function App() {
       setUser(currentUser);
       
       if (currentUser) {
-        // Set online status
-        await supabase.from('profiles').update({ status: 'online' }).eq('id', currentUser.id);
+        // Ensure profile exists and set online status
+        await supabase.from('profiles').upsert({ 
+          id: currentUser.id, 
+          status: 'online',
+          username: currentUser.user_metadata?.username || currentUser.email.split('@')[0],
+          updated_at: new Date()
+        });
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const playCrunch = () => {
+    if (!settings.sound) return;
+    // Note: /audio/crunch.mp3 should be placed in public/audio/
+    const crunch = new Audio('/audio/crunch.mp3');
+    crunch.volume = 0.4;
+    crunch.play().catch(() => {});
+    
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(20);
+    }
+  };
+
+  const handleTabChange = (tabId) => {
+    playCrunch();
+    setActiveTab(tabId);
+  };
 
   const handleLogout = async () => {
     if (user) {
@@ -60,23 +83,25 @@ function App() {
     setEntered(true);
     if (audioDomRef.current) {
       audioDomRef.current.volume = 0.5;
-      audioDomRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(e => {
-        console.log('Альтитуда звука блокирована браузером', e);
-        setIsPlaying(false);
-      });
+      if (settings.sound) {
+        audioDomRef.current.play().then(() => {
+          // Sync state if needed
+        }).catch(e => {
+          // Silence browser auto-play block errors
+        });
+      }
     }
   };
 
   const toggleSound = () => {
     if (!audioDomRef.current) return;
-    if (isPlaying) {
-      audioDomRef.current.pause();
-      setIsPlaying(false);
-    } else {
+    const newState = !settings.sound;
+    setSettings('sound', newState);
+    
+    if (newState) {
       audioDomRef.current.play().catch(() => {});
-      setIsPlaying(true);
+    } else {
+      audioDomRef.current.pause();
     }
   };
 
@@ -119,25 +144,30 @@ function App() {
   return (
     <>
       <audio ref={audioDomRef} src={audio1} loop />
-      <FallingApples />
-      <div className="app-container" style={{ position: 'relative', zIndex: 10, paddingTop: '80px' }}>
+      <FallingApples settings={settings} />
+      <div className="app-container">
         <AppHeader 
           activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
+          setActiveTab={handleTabChange} 
           user={user}
           onLogout={handleLogout}
-          onAuthClick={() => setIsAuthModalOpen(true)}
+          onAuthClick={() => {
+            playCrunch();
+            setIsAuthModalOpen(true);
+          }}
+          settings={settings}
+          setSettings={setSettings}
         />
         
-        <div className="header-spacer" style={{ height: 'var(--header-height)', marginBottom: '1.5rem' }} />
+        {/* Removed redundant header-spacer as app-container already has padding-top */}
         
         <button 
           onClick={toggleSound} 
           className="sound-toggle-btn" 
-          title={isPlaying ? "Выключить святые песнопения" : "Включить святые песнопения"}
-          aria-label={isPlaying ? "Выключить звук" : "Включить звук"}
+          title={settings.sound ? "Выключить святые песнопения" : "Включить святые песнопения"}
+          aria-label={settings.sound ? "Выключить звук" : "Включить звук"}
         >
-          {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
+          {settings.sound ? <Volume2 size={24} /> : <VolumeX size={24} />}
         </button>
         
         <AuthModal 

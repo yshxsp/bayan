@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { chronicleData } from '../data/chronicle';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, List, X } from 'lucide-react';
 
 const BayanChronicle = () => {
   const [showScroll, setShowScroll] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isTocOpen, setIsTocOpen] = useState(false);
 
   useEffect(() => {
-    const checkScrollTop = () => {
+    const handleScroll = () => {
+      // Back to top visibility
       if (!showScroll && window.pageYOffset > 400) {
         setShowScroll(true);
       } else if (showScroll && window.pageYOffset <= 400) {
         setShowScroll(false);
       }
+
+      // Scroll progress
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.pageYOffset / totalHeight) * 100;
+      setScrollProgress(progress);
     };
 
-    window.addEventListener('scroll', checkScrollTop);
-    return () => window.removeEventListener('scroll', checkScrollTop);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [showScroll]);
 
   const scrollToTop = () => {
@@ -26,8 +34,18 @@ const BayanChronicle = () => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Offset for sticky header
+      const headerOffset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+
       element.classList.add('active-highlight');
+      setIsTocOpen(false); // Close mobile ToC after click
       setTimeout(() => {
         element.classList.remove('active-highlight');
       }, 2000);
@@ -35,159 +53,310 @@ const BayanChronicle = () => {
   };
 
   return (
-    <section className="chronicle-wrapper" style={{ margin: '0 auto', maxWidth: '1000px', width: '100%', padding: '0 1rem', position: 'relative' }}>
-      {/* Плавающая кнопка наверх */}
-      <button 
-        onClick={scrollToTop}
-        className={`floating-top-btn ${showScroll ? 'visible' : ''}`}
-        title="Вознестись к истокам"
-      >
-        <ArrowUp size={24} />
-      </button>
+    <section className="chronicle-wrapper">
+      {/* Индикатор прогресса чтения */}
+      <div className="scroll-progress-container">
+        <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }}></div>
+      </div>
 
-      {/* Оглавление */}
-      <nav className="glass-panel" id="toc" style={{ marginBottom: '3rem', position: 'sticky', top: '100px', zIndex: 100 }}>
-        <h2 className="biblical-header text-gradient" style={{ fontSize: '2rem', textAlign: 'center' }}>Оглавление Летописей</h2>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
-          gap: '0.5rem', 
-          marginTop: '1rem' 
-        }}>
+      {/* Кнопки управления (Вертикальный стек справа) */}
+      <div className="chronicle-controls">
+        <button 
+          onClick={() => setIsTocOpen(!isTocOpen)}
+          className={`control-btn toc-toggle ${isTocOpen ? 'active' : ''}`}
+          title="Открыть карту времен"
+        >
+          {isTocOpen ? <X size={24} /> : <List size={24} />}
+        </button>
+        
+        <button 
+          onClick={scrollToTop}
+          className={`control-btn floating-top-btn ${showScroll ? 'visible' : ''}`}
+          title="Вознестись к истокам"
+        >
+          <ArrowUp size={24} />
+        </button>
+      </div>
+
+      {/* Оглавление (Боковая панель) */}
+      <aside className={`chronicle-toc-sidebar glass-panel ${isTocOpen ? 'open' : ''}`}>
+        <div className="toc-header">
+          <h2 className="biblical-header toc-title" style={{ textAlign: 'left', margin: 0, fontSize: '1.2rem' }}>Карта Времен</h2>
+          <button className="close-toc" onClick={() => setIsTocOpen(false)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}><X size={20} /></button>
+        </div>
+        <div className="toc-list-scroll">
           {chronicleData.map((event) => (
             <a 
               key={event.id} 
               href={`#${event.id}`} 
               onClick={(e) => handleScrollTo(e, event.id)}
-              className="toc-link"
-              style={{ 
-                fontSize: '0.85rem', 
-                color: 'var(--apple-green)', 
-                textDecoration: 'none',
-                padding: '4px 8px',
-                background: 'rgba(100, 255, 0, 0.05)',
-                borderRadius: '4px',
-                textAlign: 'center',
-                transition: 'all 0.2s',
-                cursor: 'pointer'
-              }}
+              className="toc-item-link"
             >
-              {event.year}
+              <span className="toc-year-tag">{event.year.split(' ')[0]}</span>
+              <span className="toc-label-text">{event.title}</span>
             </a>
           ))}
         </div>
-      </nav>
+      </aside>
+
+      {/* Затемнение при открытом оглавлении на мобилках */}
+      {isTocOpen && <div className="toc-overlay" onClick={() => setIsTocOpen(false)}></div>}
+
+      <header className="chronicle-main-header">
+        <h2 className="biblical-header text-gradient main-title" style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>Великая Летопись Баяностана</h2>
+        <p className="thematic-subtitle" style={{ fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '1.2rem' }}>От сотворения первой покрышки до вечного глянца</p>
+      </header>
 
       {/* Основной список записей */}
-      <div className="chronicle-list" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div className="chronicle-list">
         {chronicleData.map((era) => (
           <article 
             key={era.year} 
-            id={`year-${era.year}`} 
+            id={era.id} 
             className="glass-panel chronicle-card" 
-            style={{ 
-              padding: '2rem', 
-              position: 'relative',
-              borderLeft: '4px solid var(--apple-green)',
-              animation: 'slideIn 0.5s ease-out',
-              scrollMarginTop: '130px'
-            }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ 
-                fontWeight: 'bold', 
-                fontSize: '1.2rem', 
-                color: 'var(--apple-green)',
-                background: 'rgba(100, 255, 0, 0.1)',
-                padding: '4px 12px',
-                borderRadius: '20px'
+            <div className="era-indicator"></div>
+            
+            <div className="era-header" style={{ marginBottom: '1.5rem' }}>
+              <span className="era-year" style={{ 
+                fontWeight: 800, 
+                fontSize: '1.4rem', 
+                color: 'var(--apple-green)', 
+                background: 'rgba(74, 222, 128, 0.1)', 
+                padding: '6px 18px', 
+                borderRadius: '30px', 
+                border: '1px solid rgba(74, 222, 128, 0.2)' 
               }}>
                 {era.year}
               </span>
             </div>
             
-            <h3 className="biblical-header" style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#fff' }}>
+            <h3 className="biblical-header era-title" style={{ 
+              fontSize: '2.2rem', 
+              marginBottom: '1.5rem', 
+              color: '#fff', 
+              letterSpacing: '0.05em', 
+              textAlign: 'left' 
+            }}>
               {era.title}
             </h3>
             
-            <p style={{ 
-              lineHeight: '1.8', 
-              fontSize: '1.1rem', 
-              color: 'rgba(255,255,255,0.9)',
-              textAlign: 'justify',
-              fontFamily: "'Inter', sans-serif"
-            }}>
-              {era.text}
-            </p>
-            <a href="#toc" className="back-to-toc" style={{ 
-              display: 'inline-block', 
-              marginTop: '1.5rem', 
-              color: 'var(--gold)', 
-              fontSize: '0.9rem',
-              textDecoration: 'none'
-            }}>⬆ Наверх, к оглавлению</a>
+            <div className="article-content-wrapper" style={{ maxWidth: '800px' }}>
+              <p className="era-text" style={{ 
+                color: '#ffffff', 
+                fontSize: '1.25rem', 
+                lineHeight: '1.8', 
+                textAlign: 'left',
+                textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+              }}>
+                {era.text}
+              </p>
+            </div>
           </article>
         ))}
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        .toc-link:hover {
-          background: rgba(100, 255, 0, 0.2) !important;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(100, 255, 0, 0.1);
+      <style dangerouslySetInnerHTML={{ __html: \`
+        .chronicle-wrapper {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          position: relative;
+          padding: 0 1rem;
         }
-        .chronicle-card {
-          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, background 0.5s ease;
-          scroll-margin-top: 100px;
+
+        .chronicle-main-header {
+          text-align: center;
+          margin-bottom: 4rem;
+          padding-top: 2rem;
         }
-        .chronicle-card:hover {
-          transform: translateX(10px);
-          box-shadow: 0 10px 40px rgba(100, 255, 0, 0.15);
-        }
-        .active-highlight {
-          background: rgba(100, 255, 0, 0.15) !important;
-          box-shadow: 0 0 50px rgba(100, 255, 0, 0.2);
-          transform: scale(1.02) translateX(10px);
-          border-left-width: 8px !important;
-        }
-        .floating-top-btn {
+
+        .scroll-progress-container {
           position: fixed;
-          bottom: 2rem;
-          right: 6.5rem;
+          top: var(--header-height);
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background: rgba(0,0,0,0.2);
+          z-index: 1400;
+        }
+
+        .scroll-progress-bar {
+          height: 100%;
+          background: var(--apple-green);
+          box-shadow: 0 0 10px var(--apple-green);
+          transition: width 0.1s ease-out;
+        }
+
+        .chronicle-controls {
+          position: fixed;
+          bottom: 7rem;
+          right: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          z-index: 1400;
+        }
+
+        .control-btn {
           width: 50px;
           height: 50px;
+          background: rgba(17, 17, 17, 0.9);
+          border: 1px solid var(--gold);
+          color: var(--gold);
           border-radius: 12px;
-          background: rgba(17, 17, 17, 0.8);
-          backdrop-filter: blur(10px);
-          border: 1px solid var(--apple-green);
-          color: var(--apple-green);
+          cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          cursor: pointer;
-          z-index: 9999;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .control-btn:hover {
+          transform: scale(1.1);
+          border-color: var(--apple-green);
+          color: var(--apple-green);
+          box-shadow: 0 5px 20px rgba(55, 235, 61, 0.3);
+        }
+
+        .control-btn.active {
+          background: var(--apple-green);
+          color: #000;
+          border-color: var(--apple-green);
+        }
+
+        .floating-top-btn {
           opacity: 0;
           visibility: hidden;
-          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           transform: translateY(20px);
-          box-shadow: 0 0 15px rgba(55, 235, 61, 0.3);
         }
+
         .floating-top-btn.visible {
           opacity: 1;
           visibility: visible;
           transform: translateY(0);
         }
-        .floating-top-btn:hover {
-          background: var(--apple-green);
-          color: #000;
-          box-shadow: 0 0 30px rgba(100, 255, 0, 0.5);
-          transform: scale(1.1);
+
+        .chronicle-toc-sidebar {
+          position: fixed;
+          top: 100px;
+          right: 2rem;
+          width: 300px;
+          max-height: calc(100vh - 250px);
+          z-index: 1300;
+          padding: 1.5rem;
+          transform: translateX(calc(100% + 5rem));
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          flex-direction: column;
+          background: rgba(17,17,17,0.95);
+          backdrop-filter: blur(10px);
+          border: 1px solid var(--gold);
+          border-radius: 12px;
         }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
+
+        .chronicle-toc-sidebar.open {
+          transform: translateX(0);
         }
-      `}} />
+
+        .toc-list-scroll {
+          overflow-y: auto;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          padding-right: 0.5rem;
+        }
+
+        .toc-item-link {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+          padding: 0.6rem;
+          text-decoration: none;
+          color: #ccc;
+          border-radius: 8px;
+          transition: all 0.2s;
+          font-size: 0.9rem;
+        }
+
+        .toc-item-link:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: var(--apple-green);
+          transform: translateX(5px);
+        }
+
+        .toc-year-tag {
+          background: rgba(74, 222, 128, 0.1);
+          color: var(--apple-green);
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-weight: 700;
+          font-size: 0.75rem;
+          min-width: 50px;
+          text-align: center;
+        }
+
+        .toc-overlay {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0,0,0,0.5);
+          backdrop-filter: blur(4px);
+          z-index: 1250;
+        }
+
+        .chronicle-list {
+          display: flex;
+          flex-direction: column;
+          gap: 4rem;
+          margin-top: 2rem;
+          max-width: 900px;
+        }
+
+        .chronicle-card {
+          padding: 3rem;
+          position: relative;
+          background: rgba(17, 17, 17, 0.82);
+          border-left: 4px solid var(--apple-green);
+          scroll-margin-top: 100px;
+        }
+
+        .era-indicator {
+          position: absolute;
+          left: -4px;
+          top: 3rem;
+          width: 4px;
+          height: 40px;
+          background: #fff;
+          box-shadow: 0 0 15px #fff;
+        }
+
+        .active-highlight {
+          border-left-color: #fff !important;
+          box-shadow: 0 0 30px rgba(55, 235, 61, 0.5) !important;
+          transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+          .chronicle-toc-sidebar {
+            width: 85%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            max-height: 80vh;
+          }
+          .chronicle-toc-sidebar.open {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+          }
+        }
+      \`}} />
     </section>
   );
 };

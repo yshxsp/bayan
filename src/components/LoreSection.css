@@ -1,6 +1,6 @@
 .lore-section {
-  padding: 4rem 2rem;
-  max-width: 1200px;
+  padding: 1.5rem 0; /* Vertical only, horizontal handled by parent */
+  max-width: 100%; /* inherit max-width from parent */
   margin: 0 auto;
 }
 

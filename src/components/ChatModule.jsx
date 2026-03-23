@@ -1,152 +1,192 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { Send, Hash, MessageSquare, Apple, Zap } from 'lucide-react';
+import { Send, UserPlus, MessageCircle, MoreVertical, Loader2 } from 'lucide-react';
 import './ChatModule.css';
+
+const formatSmartDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = now - date;
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  if (diff < oneDay && now.getDate() === date.getDate()) {
+    return timeStr;
+  } else if (diff < 2 * oneDay && now.getDate() - date.getDate() === 1) {
+    return `Вчера, ${timeStr}`;
+  } else if (diff < 7 * oneDay) {
+    const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    return `${days[date.getDay()]}, ${timeStr}`;
+  } else if (now.getFullYear() === date.getFullYear()) {
+    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+  } else {
+    return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(/\//g, '.');
+  }
+};
 
 const ChatModule = ({ user }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [profiles, setProfiles] = useState({});
-  const scrollRef = useRef();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    fetchMessages();
-    const subscription = supabase
+    initChat();
+
+    // Subscribe to new messages
+    const channel = supabase
       .channel('public:messages')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-        handleNewMessage(payload.new);
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+        // Only add if it's not already there (prevents double messages from inserts + subscriptions)
+        setMessages((prev) => {
+           if (prev.find(m => m.id === payload.new.id)) return prev;
+           return [...prev, payload.new];
+        });
+        
+        // Ensure profile is fetched if it's a new sender
+        if (!profiles[payload.new.sender_id]) {
+          fetchProfiles();
+        }
       })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(subscription);
+      supabase.removeChannel(channel);
     };
   }, []);
 
-  const handleNewMessage = async (msg) => {
-    if (!profiles[msg.user_id]) {
-      await fetchProfile(msg.user_id);
-    }
-    setMessages(prev => [...prev, msg]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const initChat = async () => {
+    setLoading(true);
+    await Promise.all([fetchMessages(), fetchProfiles()]);
+    setLoading(false);
   };
 
   const fetchMessages = async () => {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .order('created_at', { ascending: true })
-      .limit(50);
-    
-    if (data) {
-      // Collect unique user ids to fetch profiles
-      const userIds = [...new Set(data.map(m => m.user_id))];
-      await fetchProfiles(userIds);
-      setMessages(data);
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .limit(100);
+      
+      if (error) throw error;
+      setMessages(data || []);
+    } catch (err) {
+      console.error('Error fetching messages:', err);
+      setError('Не удалось загрузить священный чат...');
     }
   };
 
-  const fetchProfiles = async (ids) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, username, avatar_url, status')
-      .in('id', ids);
-    
-    if (data) {
-      const pMap = {};
-      data.forEach(p => pMap[p.id] = p);
-      setProfiles(prev => ({...prev, ...pMap}));
+  const fetchProfiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url, status');
+      
+      if (error) throw error;
+      const profileMap = {};
+      data?.forEach(p => profileMap[p.id] = p);
+      setProfiles(profileMap);
+    } catch (err) {
+      console.error('Error fetching profiles:', err);
     }
   };
 
-  const fetchProfile = async (id) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, username, avatar_url, status')
-      .eq('id', id)
-      .single();
-    if (data) {
-      setProfiles(prev => ({...prev, [id]: data}));
-    }
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!user || !newMessage.trim()) return;
+    if (!newMessage.trim() || !user) return;
 
-    const { error } = await supabase
-      .from('messages')
-      .insert([{ 
-        content: newMessage, 
-        user_id: user.id 
-      }]);
+    const messageContent = newMessage;
+    setNewMessage(''); // optimistic clear
 
-    if (!error) setNewMessage('');
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert([{ 
+          content: messageContent, 
+          sender_id: user.id 
+        }]);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error sending message:', err);
+      setError('Баян не принял твое послание. Попробуй еще раз, червивый прораб!');
+      setNewMessage(messageContent); // Restore on error
+    }
   };
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  if (!user) {
-    return (
-      <div className="chat-locked glass-panel">
-        <Zap size={48} className="lock-icon" />
-        <h2 className="biblical-header">Врата Закрыты</h2>
-        <p>Только истинные Адепты могут вещать в общем канале. Войдите во Врата, чтобы примкнуть к нам.</p>
-      </div>
-    );
-  }
-
   return (
-    <section className="chat-container glass-panel">
-      <div className="chat-header">
-        <Hash size={20} />
-        <span>общий-канал-баян</span>
-        <div className="online-count">
-          <Apple size={14} /> 
-          <span>{Object.keys(profiles).length} Адептов</span>
-        </div>
-      </div>
+    <div className="chat-container glass-panel">
+      <div className="chat-messages">
+        {loading ? (
+          <div className="chat-loading">
+            <Loader2 className="animate-spin" size={32} />
+            <p>Опрашиваем адептов...</p>
+          </div>
+        ) : error ? (
+          <div className="chat-error">
+            <p>{error}</p>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="chat-empty">
+            <MessageCircle size={40} opacity={0.3} />
+            <p>Здесь пока тишина. Будь первым, кто прославит Баяна!</p>
+          </div>
+        ) : (
+          messages.map((msg) => {
+            const profile = profiles[msg.sender_id] || { username: 'Аноним' };
+            const isOwn = user?.id === msg.sender_id;
 
-      <div className="chat-messages" ref={scrollRef}>
-        {messages.map((msg) => {
-          const profile = profiles[msg.user_id] || { username: 'Странник', avatar_url: null };
-          const isOwn = msg.user_id === user.id;
-
-          return (
-            <div key={msg.id} className={`chat-message ${isOwn ? 'own' : ''}`}>
-              {!isOwn && (
-                <div className="message-avatar">
-                  {profile.avatar_url ? (
-                    <img src={profile.avatar_url} alt={`Аватар ${profile.username}`} loading="lazy" />
-                  ) : (
-                    <div className="avatar-placeholder">🍎</div>
-                  )}
+            return (
+              <div key={msg.id} className={`message-wrapper ${isOwn ? 'own' : ''}`}>
+                {!isOwn && (
+                  <div className="message-avatar">
+                    {profile.avatar_url ? (
+                      <img src={profile.avatar_url} alt={`Аватар \${profile.username}`} loading="lazy" />
+                    ) : (
+                      <div className="avatar-placeholder">🍎</div>
+                    )}
+                    <div className={`status-dot \${profile.status === 'online' ? 'green' : 'red'}`}></div>
+                  </div>
+                )}
+                <div className="message-content-box">
+                  <div className="message-header">
+                    <span className="sender-name">{profile.username}</span>
+                    <span className="message-time">{formatSmartDate(msg.created_at)}</span>
+                  </div>
+                  <p className="message-text">{msg.content}</p>
                 </div>
-              )}
-              <div className="message-content">
-                {!isOwn && <span className="message-author">{profile.username}</span>}
-                <div className="message-bubble">{msg.content}</div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
       <form className="chat-input-area" onSubmit={sendMessage}>
         <input 
           type="text" 
-          value={newMessage} 
+          placeholder={user ? "Напишите что-нибудь..." : "Войдите, чтобы писать в чат"}
+          value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Вещай истину..." 
+          disabled={!user || loading}
         />
-        <button type="submit" className="send-btn" aria-label="Отправить сообщение">
+        <button type="submit" disabled={!user || !newMessage.trim() || loading}>
           <Send size={18} />
         </button>
       </form>
-    </section>
+    </div>
   );
 };
 
