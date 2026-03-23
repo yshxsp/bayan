@@ -24,10 +24,25 @@ function App() {
   };
 
   if (!entered) {
+    const LORE_TEXT_1 = "ВЕЛИКАЯ БОРЬБА ЗА ЯБЛОКИ НАЧАЛАСЬ В СУМСКОМ ЛЕСУ • ЮРИЙ БАЯНОВ РОДИЛСЯ В 2004 • СВЯЩЕННАЯ ПОКРЫШКА И ПРАВЕДНЫЙ ПУТЬ • ".repeat(15);
+    const LORE_TEXT_2 = "У ТЯ КАКИЕ ТО СЛАБЫЕ ФРАЗОЧКИ ЕБЛАН ТЕБЯ ПОХОДУ МАТУШКА СРАЗУ УРАНИЛА • СТЕЙК 28/9 ВОССТАНАВЛИВАЕТ СИЛЫ • ДУХИ ЖАЖДУТ ВОЗМЕЗДИЯ • ".repeat(15);
     return (
       <div className="entrance-gate">
-        <h1 className="biblical-header" style={{fontSize: '4rem', marginBottom: '2rem'}}>Священный Баяностан</h1>
-        <button className="gate-btn" onClick={enterWorld}>Войти во Врата</button>
+        <div className="lore-marquee-container">
+          {Array.from({length: 12}).map((_, i) => (
+            <div 
+              key={i} 
+              className={`lore-marquee-line ${i % 2 !== 0 ? 'reverse' : ''}`} 
+              style={{ animationDuration: `${60 + i * 5}s` }}
+            >
+              {i % 2 === 0 ? LORE_TEXT_1 : LORE_TEXT_2}
+            </div>
+          ))}
+        </div>
+        <div className="entrance-content">
+          <h1 className="biblical-header title-glow">Священный Баяностан</h1>
+          <button className="gate-btn" onClick={enterWorld}>Войти во Врата</button>
+        </div>
       </div>
     );
   }
