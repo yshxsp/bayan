@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { chronicleData } from '../data/chronicle';
 import { ArrowUp } from 'lucide-react';
 
 const BayanChronicle = () => {
+  const [showScroll, setShowScroll] = useState(false);
+
+  useEffect(() => {
+    const checkScrollTop = () => {
+      if (!showScroll && window.pageYOffset > 400) {
+        setShowScroll(true);
+      } else if (showScroll && window.pageYOffset <= 400) {
+        setShowScroll(false);
+      }
+    };
+
+    window.addEventListener('scroll', checkScrollTop);
+    return () => window.removeEventListener('scroll', checkScrollTop);
+  }, [showScroll]);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -11,10 +26,7 @@ const BayanChronicle = () => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      // Плавный скролл к центру
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      
-      // Добавляем класс подсветки
       element.classList.add('active-highlight');
       setTimeout(() => {
         element.classList.remove('active-highlight');
@@ -23,7 +35,16 @@ const BayanChronicle = () => {
   };
 
   return (
-    <div className="chronicle-wrapper" style={{ margin: '0 auto', maxWidth: '1000px', width: '100%', padding: '0 1rem' }}>
+    <div className="chronicle-wrapper" style={{ margin: '0 auto', maxWidth: '1000px', width: '100%', padding: '0 1rem', position: 'relative' }}>
+      {/* Плавающая кнопка наверх */}
+      <button 
+        onClick={scrollToTop}
+        className={`floating-top-btn ${showScroll ? 'visible' : ''}`}
+        title="Вознестись к истокам"
+      >
+        <ArrowUp size={24} />
+      </button>
+
       {/* Оглавление */}
       <div className="glass-panel" id="toc" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
         <h2 className="biblical-header text-gradient" style={{ fontSize: '2rem', textAlign: 'center' }}>Оглавление Летописей</h2>
@@ -82,22 +103,6 @@ const BayanChronicle = () => {
               }}>
                 {event.year}
               </span>
-              <button 
-                onClick={scrollToTop}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'rgba(255,255,255,0.4)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '0.8rem'
-                }}
-                className="hover-bright"
-              >
-                <ArrowUp size={14} /> Наверх
-              </button>
             </div>
             
             <h3 className="biblical-header" style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#fff' }}>
@@ -137,12 +142,42 @@ const BayanChronicle = () => {
           transform: scale(1.02) translateX(10px);
           border-left-width: 8px !important;
         }
+        .floating-top-btn {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: rgba(10, 10, 10, 0.7);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(100, 255, 0, 0.3);
+          color: var(--apple-green);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 1000;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          transform: translateY(20px);
+          box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .floating-top-btn.visible {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        .floating-top-btn:hover {
+          background: var(--apple-green);
+          color: #000;
+          box-shadow: 0 0 30px rgba(100, 255, 0, 0.5);
+          transform: scale(1.1);
+        }
         @keyframes slideIn {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        .hover-bright:hover {
-          color: #fff !important;
         }
       `}} />
     </div>
