@@ -156,7 +156,7 @@ const BayanChronicle = () => {
         ))}
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: \`
+      <style dangerouslySetInnerHTML={{ __html: `
         .chronicle-wrapper {
           width: 100%;
           max-width: 1200px;
@@ -356,7 +356,7 @@ const BayanChronicle = () => {
             pointer-events: auto;
           }
         }
-      \`}} />
+      `}} />
     </section>
   );
 };
