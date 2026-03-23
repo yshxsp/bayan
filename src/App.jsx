@@ -17,7 +17,7 @@ function App() {
   const enterWorld = () => {
     setEntered(true);
     // Autoplay audio on entry
-    const audio = new Audio('/bayan-audio.mp3');
+    const audio = new Audio('/audio1.mp3');
     audio.loop = true;
     audio.volume = 0.5;
     audio.play().catch(e => console.log('Альтитуда звука блокирована браузером'));

@@ -20,7 +20,9 @@ body {
   font-family: 'Playfair Display', serif;
   background-color: var(--bg-dark);
   color: var(--text-main);
-  background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+  background-image: 
+    radial-gradient(circle at 50% 0%, #1a0f0f 0%, #000 70%),
+    linear-gradient(to bottom, rgba(55,235,61,0.02) 0%, transparent 100%);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -40,11 +42,29 @@ h1, h2, h3, h4, h5, h6, .biblical-header {
 
 /* Glass panel becomes Stone Panel */
 .glass-panel {
-  background: var(--stone);
-  border: 1px solid var(--border-glass);
-  border-radius: 4px;
-  padding: 2rem;
-  box-shadow: 0 0 20px rgba(0,0,0,0.8);
+  background: rgba(17, 17, 17, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.glass-panel:hover {
+  box-shadow: 0 15px 50px rgba(0,0,0,0.95), inset 0 0 30px rgba(212, 175, 55, 0.2);
+  transform: translateY(-3px);
+  border-color: rgba(55, 235, 61, 0.6);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--gold), var(--apple-green));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
 }
 
 /* Tab Navigation */
@@ -152,6 +172,65 @@ h1, h2, h3, h4, h5, h6, .biblical-header {
 }
 
 @keyframes fade {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(15px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =========================
+   MOBILE RESPONSIVENESS
+   ========================= */
+@media (max-width: 768px) {
+  .biblical-header {
+    font-size: 2rem !important;
+  }
+  
+  .gate-btn {
+    font-size: 1.4rem;
+    padding: 1rem 2rem;
+  }
+
+  header h1 {
+    font-size: 2.5rem !important;
+    margin-top: 1rem;
+  }
+
+  .tab-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0 0.5rem 1rem;
+  }
+
+  .tab-btn {
+    flex: 1 1 calc(50% - 1rem);
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  .glass-panel {
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .book-columns {
+    column-count: 1;
+    column-gap: 0;
+  }
+
+  /* Override Timer specifically for mobile safety */
+  .time-val {
+    font-size: 3rem !important;
+  }
+  .time-sep {
+    font-size: 2.5rem !important;
+    margin-top: -1rem !important;
+  }
+  .time-display {
+    gap: 0.5rem !important;
+  }
+  
+  .madness-text {
+    font-size: 1.2rem !important;
+    max-width: 95% !important;
+  }
 }
