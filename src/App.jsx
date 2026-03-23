@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { Volume2, VolumeX } from 'lucide-react'
 import FallingApples from './components/FallingApples'
 import HeroApple from './components/HeroApple'
 import LoreSection from './components/LoreSection'
@@ -13,14 +14,34 @@ import BayanHistoryGenerator from './components/BayanHistoryGenerator'
 function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio('/audio1.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.5;
+  }, []);
 
   const enterWorld = () => {
     setEntered(true);
-    // Autoplay audio on entry
-    const audio = new Audio('/audio1.mp3');
-    audio.loop = true;
-    audio.volume = 0.5;
-    audio.play().catch(e => console.log('Альтитуда звука блокирована браузером'));
+    audioRef.current.play().then(() => {
+      setIsPlaying(true);
+    }).catch(e => {
+      console.log('Альтитуда звука блокирована браузером', e);
+      setIsPlaying(false);
+    });
+  };
+
+  const toggleSound = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
   };
 
   if (!entered) {
@@ -51,6 +72,9 @@ function App() {
     <>
       <FallingApples />
       <div className="app-container" style={{ position: 'relative', zIndex: 10 }}>
+        <button onClick={toggleSound} className="sound-toggle-btn" title={isPlaying ? "Выключить святые песнопения" : "Включить святые песнопения"}>
+          {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
+        </button>
         <header style={{textAlign: 'center', margin: '3rem 0', padding: '0 1rem'}}>
           <h1 className="biblical-header" style={{fontSize: '3.5rem'}}>Священный Баяностан</h1>
           <nav className="tab-nav">

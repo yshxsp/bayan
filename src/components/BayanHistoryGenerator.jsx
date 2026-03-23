@@ -10,6 +10,9 @@ const BayanHistoryGenerator = () => {
     setLoading(true);
     try {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+        throw new Error('Для работы Ока необходимо прописать свой VITE_GEMINI_API_KEY в файле .env (корень проекта) и перезапустить сервер.');
+      }
       const prompt = `Расскажи историю ${year} года в Баяностане. Пиши в стиле божественных рассказов в Библии, ветхозаветным и серьезным стилем, но с использованием абсурдного лора Баяна (Сумская область, Яблоки с глазами, продавец покрышек на Волгу Юрий Баянов, петухи, шиномонтаж, наезды разнорабочих, сленг "словить огрызок", "покрыть глянцем"). Речь самого Баяна должна быть в стиле "божественных цитат", то есть грубая, как у агрессивного разнорабочего из интернета, который жестко унижает собеседника (используй жесткий сленг, абсурдные угрозы про "уматузи", "остасывала всем народу", стейк и т.д., только уникально для этого года). Отвечай коротко, на 3-4 абзаца.`;
       
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -23,11 +26,30 @@ const BayanHistoryGenerator = () => {
       });
       
       const data = await response.json();
-      const output = data.candidates[0].content.parts[0].text;
-      setHistory(output);
+      
+      // Handle API level errors (e.g. invalid key)
+      if (!response.ok) {
+        throw new Error(data.error?.message || `Ошибка API: статус ${response.status}`);
+      }
+
+      // Handle safety blocked responses
+      if (!data.candidates || data.candidates.length === 0) {
+        if (data.promptFeedback?.blockReason) {
+            throw new Error(`Гугл заблокировал запрос по соображениям цензуры. Причина: ${data.promptFeedback.blockReason}`);
+        }
+        throw new Error('Пустой ответ от Гемини, возможно запрос заблокирован внутренними фильтрами.');
+      }
+
+      const candidate = data.candidates[0];
+      if (candidate.finishReason !== 'STOP') {
+        throw new Error(`Генерация прервана Гуглом (finishReason: ${candidate.finishReason}). Строгий лор Баяна оказался чересчур мощным для фильтров безопасности корпорации.`);
+      }
+
+      const output = candidate.content?.parts?.[0]?.text;
+      setHistory(output || "Око промолчало.");
     } catch (error) {
-      console.error(error);
-      setHistory("Ой, Связь с Оком прервалась. Возможно, петух клюнул интернет-кабель или ключ устарел.");
+      console.error('Gemini Error:', error);
+      setHistory(`Ошибка: ${error.message}`);
     } finally {
       setLoading(false);
     }
