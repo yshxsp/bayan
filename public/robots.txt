@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://bayan-six.vercel.app/sitemap.xml
+Sitemap: https://bayanostan.vercel.app/sitemap.xml
