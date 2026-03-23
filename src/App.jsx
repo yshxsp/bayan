@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Volume2, VolumeX } from 'lucide-react'
+import { Volume2, VolumeX, Radio } from 'lucide-react'
 import FallingApples from './components/FallingApples'
 import HeroApple from './components/HeroApple'
 import LoreSection from './components/LoreSection'
@@ -19,8 +19,12 @@ import ProfileSection from './components/ProfileSection'
 import { supabase } from './supabaseClient'
 import { useSettings } from './hooks/useSettings'
 import './components/EntranceStyles.css'
-// import audio1 from './assets/audio/audio1.mp3'
-const audio1 = '/audio/audio1.mp3';
+
+const RADIO_PLAYLIST = [
+  '/audio/audio1.mp3',
+  '/audio/audio2.mp3',
+  '/audio/audio3.mp3'
+];
 
 function App() {
   const [settings, setSettings] = useSettings();
@@ -28,6 +32,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('history');
   const [user, setUser] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const audioDomRef = useRef(null);
 
   useEffect(() => {
@@ -81,16 +86,7 @@ function App() {
 
   const enterWorld = () => {
     setEntered(true);
-    if (audioDomRef.current) {
-      audioDomRef.current.volume = 0.5;
-      if (settings.sound) {
-        audioDomRef.current.play().then(() => {
-          // Sync state if needed
-        }).catch(e => {
-          // Silence browser auto-play block errors
-        });
-      }
-    }
+    // Auto-play disabled per user request
   };
 
   const toggleSound = () => {
@@ -99,9 +95,22 @@ function App() {
     setSettings('sound', newState);
     
     if (newState) {
+      audioDomRef.current.volume = 0.5;
       audioDomRef.current.play().catch(() => {});
     } else {
       audioDomRef.current.pause();
+    }
+  };
+
+  const handleTrackEnded = () => {
+    const nextIndex = (currentTrackIndex + 1) % RADIO_PLAYLIST.length;
+    setCurrentTrackIndex(nextIndex);
+    // src for <audio> will update via currentTrackIndex, but we need to trigger play for next track
+    if (audioDomRef.current && settings.sound) {
+      // Small timeout to ensure src update is processed if needed (though React handles state)
+      setTimeout(() => {
+        audioDomRef.current.play().catch(() => {});
+      }, 50);
     }
   };
 
@@ -143,7 +152,11 @@ function App() {
 
   return (
     <>
-      <audio ref={audioDomRef} src={audio1} loop />
+      <audio 
+        ref={audioDomRef} 
+        src={RADIO_PLAYLIST[currentTrackIndex]} 
+        onEnded={handleTrackEnded}
+      />
       <FallingApples settings={settings} />
       <div className="app-container">
         <AppHeader 
@@ -161,14 +174,16 @@ function App() {
         
         {/* Removed redundant header-spacer as app-container already has padding-top */}
         
-        <button 
-          onClick={toggleSound} 
-          className="sound-toggle-btn control-btn" 
-          title={settings.sound ? "Выключить святые песнопения" : "Включить святые песнопения"}
-          aria-label={settings.sound ? "Выключить звук" : "Включить звук"}
-        >
-          {settings.sound ? <Volume2 size={24} /> : <VolumeX size={24} />}
-        </button>
+        <div className="audio-controls">
+          <button 
+            onClick={toggleSound} 
+            className={`sound-toggle-btn control-btn ${!settings.sound ? 'muted' : ''}`} 
+            title={settings.sound ? "Выключить Радио Баяностана" : "Включить Радио Баяностана"}
+            aria-label={settings.sound ? "Выключить звук" : "Включить звук"}
+          >
+            {settings.sound ? <Radio size={24} className="animate-pulse" /> : <VolumeX size={24} />}
+          </button>
+        </div>
         
         <AuthModal 
           isOpen={isAuthModalOpen} 
