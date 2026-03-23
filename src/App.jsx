@@ -11,6 +11,7 @@ import ThrowSection from './components/ThrowSection'
 import BayanTimer from './components/BayanTimer'
 import BayanHistoryGenerator from './components/BayanHistoryGenerator'
 import BayanChronicle from './components/BayanChronicle'
+import DonationSection from './components/DonationSection'
 import audio1 from './assets/audio/audio1.mp3'
 
 function App() {
@@ -86,6 +87,7 @@ function App() {
             <button className={`tab-btn ${activeTab === 'wiki' ? 'active' : ''}`} onClick={() => setActiveTab('wiki')}>Ложь и Истина</button>
             <button className={`tab-btn ${activeTab === 'calc' ? 'active' : ''}`} onClick={() => setActiveTab('calc')}>Сборы налогов</button>
             <button className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`} onClick={() => setActiveTab('gallery')}>Святилище Артов</button>
+            <button className={`tab-btn ${activeTab === 'donations' ? 'active' : ''} highlight-tab`} onClick={() => setActiveTab('donations')}>Подношения Баяну</button>
           </nav>
         </header>
 
@@ -137,6 +139,12 @@ function App() {
           {activeTab === 'gallery' && (
             <div style={{animation: 'fade 0.5s'}}>
                <GelbooruGallery />
+            </div>
+          )}
+
+          {activeTab === 'donations' && (
+            <div style={{animation: 'fade 0.5s'}}>
+               <DonationSection />
             </div>
           )}
         </main>
