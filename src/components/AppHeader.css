@@ -254,17 +254,17 @@
 
 .online-indicator::after {
   content: '🍎';
-  filter: saturate(1.5) drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));
+  filter: hue-rotate(90deg) saturate(1.5) drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));
 }
 
 .online-indicator.apple-red::after {
   content: '🍎';
-  filter: grayscale(1) invert(0.2) sepia(1) saturate(5) hue-rotate(-50deg);
+  filter: grayscale(0.8) opacity(0.6); /* Dull red for offline/away */
 }
 
 .online-indicator.apple-green::after {
   content: '🍎';
-  filter: saturate(1.5) drop-shadow(0 0 5px rgba(74, 222, 128, 0.5));
+  filter: hue-rotate(90deg) saturate(2) drop-shadow(0 0 8px rgba(74, 222, 128, 0.8));
 }
 /* Fallback if emoji rendering issues */
 .online-indicator.apple-green { box-shadow: 0 0 10px rgba(74, 222, 128, 0.3); }
