@@ -1,0 +1,41 @@
+.entrance-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.gate-auth-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.gate-secondary-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #888;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.gate-secondary-btn:hover {
+  border-color: var(--apple-green);
+  color: var(--apple-green);
+  background: rgba(74, 222, 128, 0.05);
+}
+
+.main-gate {
+  border-width: 3px !important;
+  font-size: 1.8rem !important;
+}
+
+/* Glass panel utility */
+.glass-panel {
+  background: rgba(3, 7, 18, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}

@@ -1,0 +1,198 @@
+.profile-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 3rem;
+  border-radius: 30px;
+  animation: fadeIn 0.5s ease;
+}
+
+.profile-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  background: linear-gradient(to right, var(--apple-green), #fff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.large-avatar {
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 3px solid var(--apple-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(74, 222, 128, 0.2);
+}
+
+.large-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  cursor: pointer;
+  padding: 1rem;
+}
+
+.large-avatar:hover .avatar-upload-overlay {
+  opacity: 1;
+}
+
+.avatar-upload-overlay input {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 0.7rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.avatar-hint {
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.profile-input-group label {
+  color: #888;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.profile-input-group input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.2rem;
+  border-radius: 15px;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.profile-input-group small {
+  align-self: flex-end;
+  color: #555;
+  font-size: 0.8rem;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.5rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.save-profile-btn {
+  background: var(--apple-green);
+  color: black;
+  border: none;
+  padding: 1.2rem;
+  border-radius: 15px;
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.save-profile-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(74, 222, 128, 0.3);
+}
+
+.profile-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: 10px;
+  animation: slideIn 0.3s ease;
+}
+
+.profile-message.success {
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--apple-green);
+}
+
+.profile-message.error {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
