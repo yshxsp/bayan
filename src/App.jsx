@@ -11,6 +11,7 @@ import ThrowSection from './components/ThrowSection'
 import BayanTimer from './components/BayanTimer'
 import BayanHistoryGenerator from './components/BayanHistoryGenerator'
 import BayanChronicle from './components/BayanChronicle'
+import audio1 from './assets/audio/audio1.mp3'
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -68,7 +69,7 @@ function App() {
 
   return (
     <>
-      <audio ref={audioDomRef} src="/audio1.mp3" loop />
+      <audio ref={audioDomRef} src={audio1} loop />
       <FallingApples />
       <div className="app-container" style={{ position: 'relative', zIndex: 10 }}>
         <button onClick={toggleSound} className="sound-toggle-btn" title={isPlaying ? "Выключить святые песнопения" : "Включить святые песнопения"}>
