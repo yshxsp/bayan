@@ -79,6 +79,7 @@ function App() {
           <nav className="tab-nav">
             <button className={`tab-btn ${activeTab === 'book' ? 'active' : ''}`} onClick={() => setActiveTab('book')}>Правила Баяна</button>
             <button className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>Летописи Творения</button>
+            <button className={`tab-btn ${activeTab === 'ai' ? 'active' : ''}`} onClick={() => setActiveTab('ai')}>Яблочный Интеллект</button>
             <button className={`tab-btn ${activeTab === 'throw' ? 'active' : ''}`} onClick={() => setActiveTab('throw')}>Обряд Бросания</button>
             <button className={`tab-btn ${activeTab === 'timer' ? 'active' : ''}`} onClick={() => setActiveTab('timer')}>Часы Забвения</button>
             <button className={`tab-btn ${activeTab === 'wiki' ? 'active' : ''}`} onClick={() => setActiveTab('wiki')}>Ложь и Истина</button>
@@ -91,6 +92,11 @@ function App() {
           {activeTab === 'history' && (
             <div style={{animation: 'fade 0.5s'}}>
               <BayanChronicle />
+            </div>
+          )}
+
+          {activeTab === 'ai' && (
+            <div style={{animation: 'fade 0.5s'}}>
               <BayanHistoryGenerator />
             </div>
           )}

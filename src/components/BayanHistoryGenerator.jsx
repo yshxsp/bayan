@@ -37,7 +37,7 @@ const BayanHistoryGenerator = () => {
         if (data.promptFeedback?.blockReason) {
             throw new Error(`Гугл заблокировал запрос по соображениям цензуры. Причина: ${data.promptFeedback.blockReason}`);
         }
-        throw new Error('Пустой ответ от Гемини, возможно запрос заблокирован внутренними фильтрами.');
+        throw new Error('Пустой ответ от Яблочного Интеллекта, возможно запрос заблокирован внутренними фильтрами.');
       }
 
       const candidate = data.candidates[0];
@@ -57,7 +57,7 @@ const BayanHistoryGenerator = () => {
 
   return (
     <div className="glass-panel text-center">
-      <h2 className="biblical-header">Летописи Баяностана: Откровения Гемини</h2>
+      <h2 className="biblical-header">Летописи Баяностана: Откровения Яблочного Интеллекта</h2>
       <p>Введи любой год (от сотворения Сумской области до далекого будущего), и глас Баяна через ИИ поведает тебе истинную историю тех времен.</p>
       
       <div style={{ margin: '2rem 0', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
