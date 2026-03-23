@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { User, Camera, Save, CheckCircle } from 'lucide-react';
+import { Camera, Save, User, Shield, Zap, Sparkles } from 'lucide-react';
 import './ProfileSection.css';
 
 const ProfileSection = ({ user }) => {
+  const [profile, setProfile] = useState({
+    username: '',
+    full_name: '',
+    avatar_url: '',
+    status: 'online',
+    holy_rank: 'Адепт'
+  });
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState('');
+  const [updating, setUpdating] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState('');
-  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     getProfile();
@@ -16,118 +22,147 @@ const ProfileSection = ({ user }) => {
   async function getProfile() {
     try {
       setLoading(true);
-      const { data, error, status } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select(`username, avatar_url`)
+        .select(`username, full_name, avatar_url, status`)
         .eq('id', user.id)
         .single();
 
-      if (error && status !== 406) {
-        throw error;
-      }
-
+      if (error) throw error;
       if (data) {
-        setUsername(data.username || '');
-        setAvatarUrl(data.avatar_url || '');
+        setProfile(data);
+        setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
-      console.error('Error loading user data!', error.message);
+      console.error('Error loading profile:', error.message);
     } finally {
       setLoading(false);
     }
   }
 
-  async function updateProfile(e) {
-    e.preventDefault();
-
+  async function updateProfile() {
     try {
-      setLoading(true);
+      setUpdating(true);
       const updates = {
         id: user.id,
-        username,
+        ...profile,
         avatar_url: avatarUrl,
         updated_at: new Date(),
       };
 
       const { error } = await supabase.from('profiles').upsert(updates);
       if (error) throw error;
-      
-      // Update auth metadata too to sync with header
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { username, avatar_url: avatarUrl }
-      });
-      if (authError) throw authError;
-
-      setMessage({ type: 'success', text: 'Профиль успешно покрыт глянцем!' });
-      setTimeout(() => setMessage(null), 3000);
+      alert('Лик обновлен в Великой Книге!');
     } catch (error) {
-      setMessage({ type: 'error', text: error.message });
+      alert(error.message);
     } finally {
-      setLoading(false);
+      setUpdating(false);
     }
   }
 
-  return (
-    <div className="profile-container glass-panel">
-      <h2 className="biblical-header profile-title">Личные Покои Адепта</h2>
+  const handleAvatarUpload = async (event) => {
+    try {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      let { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(publicUrl);
       
-      <div className="profile-card">
+      // Sync with user metadata immediately for header
+      await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl }
+      });
+
+    } catch (error) {
+      alert('Ошибка при вознесении лика: ' + error.message);
+    }
+  };
+
+  if (loading) return <div className="loading-bible">Читаем свитки судьбы...</div>;
+
+  return (
+    <section className="profile-container glass-panel">
+      <div className="profile-header-banner">
         <div className="avatar-section">
           <div className="avatar-wrapper">
             <div className="large-avatar">
-              {avatarUrl ? <img src={avatarUrl} alt="profile" /> : <User size={60} />}
+              {avatarUrl ? <img src={avatarUrl} alt="Аватар Адепта" loading="lazy" /> : <User size={60} />}
               <label className="avatar-upload-overlay" title="Сменить лик">
                 <Camera size={24} />
                 <input 
-                  type="text" 
-                  placeholder="URL иконки" 
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleAvatarUpload} 
+                  hidden 
                 />
               </label>
             </div>
-            <div className="online-indicator apple-green" title="В сети Баяностана"></div>
+            <div className="rank-badge">
+              <Shield size={14} />
+              <span>{profile.holy_rank || 'Адепт'}</span>
+            </div>
           </div>
-          <p className="avatar-hint">Вставь прямую ссылку на картинку, червивый прораб!</p>
         </div>
-
-        <form onSubmit={updateProfile} className="profile-form">
-          <div className="profile-input-group">
-            <label>Твое Имя в Баяностане</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.slice(0, 20))}
-              placeholder="Как тебя кличут?"
-              required
-            />
-            <small>{username.length}/20 символов</small>
-          </div>
-
-          <div className="profile-stats">
-            <div className="stat-box">
-              <span className="stat-label">Твой Дух</span>
-              <span className="stat-value">Свеж как Яблоко</span>
-            </div>
-            <div className="stat-box">
-              <span className="stat-label">Почта</span>
-              <span className="stat-value">{user.email}</span>
-            </div>
-          </div>
-
-          <button type="submit" className="save-profile-btn" disabled={loading}>
-            {loading ? 'Шпаклюю...' : <><Save size={20} /> Зашпаклевать изменения</>}
-          </button>
-
-          {message && (
-            <div className={`profile-message ${message.type}`}>
-              <CheckCircle size={18} />
-              <span>{message.text}</span>
-            </div>
-          )}
-        </form>
       </div>
-    </div>
+
+      <div className="profile-info-grid">
+        <div className="info-card glass-panel">
+          <label>Имя в Летописях</label>
+          <input 
+            type="text" 
+            value={profile.username || ''} 
+            onChange={(e) => setProfile({...profile, username: e.target.value})}
+            placeholder="Как зовут тебя, путник?"
+          />
+        </div>
+        <div className="info-card glass-panel">
+          <label>Статус Души</label>
+          <div className="status-selector">
+            <span className={`status-dot ${profile.status}`}></span>
+            <select 
+              value={profile.status} 
+              onChange={(e) => setProfile({...profile, status: e.target.value})}
+            >
+              <option value="online">В Глянце (Online)</option>
+              <option value="offline">В Гараже (Offline)</option>
+              <option value="away">На Стройке (Away)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="achievements-section">
+        <h3 className="biblical-header"><Sparkles size={20} /> Заслуги перед Баяном</h3>
+        <div className="achievements-list">
+          <div className="achievement-item locked">
+            <Zap size={24} />
+            <div className="ach-tooltip">Первая Покрышка: Соберите 100 яблок</div>
+          </div>
+        </div>
+      </div>
+
+      <button 
+        className="save-profile-btn" 
+        onClick={updateProfile}
+        disabled={updating}
+      >
+        <Save size={20} />
+        {updating ? 'Запечатываем...' : 'Сохранить Истину'}
+      </button>
+    </section>
   );
 };
 

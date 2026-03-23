@@ -64,25 +64,22 @@ const AppHeader = ({ activeTab, setActiveTab, user, onLogout, onAuthClick }) => 
             <div className={`category-label ${cat.items.some(i => i.id === activeTab) ? 'active' : ''}`}>
               {cat.icon}
               <span>{cat.label}</span>
-              <ChevronDown size={14} className={`chevron ${activeCategory === cat.id ? 'open' : ''}`} />
+              <ChevronDown size={14} className="chevron" />
             </div>
             
-            {activeCategory === cat.id && (
-              <div className="category-dropdown glass-panel">
-                {cat.items.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`dropdown-item ${activeTab === item.id ? 'active' : ''}`}
-                    onClick={() => {
-                      setActiveTab(item.id);
-                      setActiveCategory(null);
-                    }}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="category-dropdown glass-panel">
+              {cat.items.map((item) => (
+                <button
+                  key={item.id}
+                  className={`dropdown-item ${activeTab === item.id ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
         ))}
       </nav>
@@ -93,7 +90,7 @@ const AppHeader = ({ activeTab, setActiveTab, user, onLogout, onAuthClick }) => 
             <div className="user-info" onClick={() => setActiveTab('profile')}>
               <div className="user-avatar-small">
                 {user.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} alt="avatar" />
+                  <img src={user.user_metadata.avatar_url} alt="Мой аватар" loading="lazy" />
                 ) : (
                   <User size={20} />
                 )}
