@@ -27,8 +27,8 @@ const ProfileSection = ({ user }) => {
       }
 
       if (data) {
-        setUsername(data.username);
-        setAvatarUrl(data.avatar_url);
+        setUsername(data.username || '');
+        setAvatarUrl(data.avatar_url || '');
       }
     } catch (error) {
       console.error('Error loading user data!', error.message);
@@ -52,10 +52,11 @@ const ProfileSection = ({ user }) => {
       const { error } = await supabase.from('profiles').upsert(updates);
       if (error) throw error;
       
-      // Update auth metadata too
-      await supabase.auth.updateUser({
+      // Update auth metadata too to sync with header
+      const { error: authError } = await supabase.auth.updateUser({
         data: { username, avatar_url: avatarUrl }
       });
+      if (authError) throw authError;
 
       setMessage({ type: 'success', text: 'Профиль успешно покрыт глянцем!' });
       setTimeout(() => setMessage(null), 3000);
@@ -72,17 +73,20 @@ const ProfileSection = ({ user }) => {
       
       <div className="profile-card">
         <div className="avatar-section">
-          <div className="large-avatar">
-            {avatarUrl ? <img src={avatarUrl} alt="profile" /> : <User size={60} />}
-            <label className="avatar-upload-overlay" title="Сфотать лицо">
-              <Camera size={24} />
-              <input 
-                type="text" 
-                placeholder="URL иконки" 
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-              />
-            </label>
+          <div className="avatar-wrapper">
+            <div className="large-avatar">
+              {avatarUrl ? <img src={avatarUrl} alt="profile" /> : <User size={60} />}
+              <label className="avatar-upload-overlay" title="Сменить лик">
+                <Camera size={24} />
+                <input 
+                  type="text" 
+                  placeholder="URL иконки" 
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                />
+              </label>
+            </div>
+            <div className="online-indicator apple-green" title="В сети Баяностана"></div>
           </div>
           <p className="avatar-hint">Вставь прямую ссылку на картинку, червивый прораб!</p>
         </div>
@@ -102,8 +106,8 @@ const ProfileSection = ({ user }) => {
 
           <div className="profile-stats">
             <div className="stat-box">
-              <span className="stat-label">Статус</span>
-              <span className="stat-value"><span className="online-indicator apple-green"></span> В сети</span>
+              <span className="stat-label">Твой Дух</span>
+              <span className="stat-value">Свеж как Яблоко</span>
             </div>
             <div className="stat-box">
               <span className="stat-label">Почта</span>
