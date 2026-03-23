@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const bayanRules = [
   "1. Не возжелай запчасти на Жигули, ибо Истина только в Покрышках на Волгу R15.",
@@ -15,14 +15,27 @@ const bayanRules = [
 
 const BayanBook = () => {
   return (
-    <section className="bayan-book">
-      <h2 className="biblical-header">10 Правил Баяностана</h2>
-      <p style={{textAlign: 'center', marginBottom: '2rem', fontSize: '1.2rem'}}>Свод священных догматов для каждого истинного разнорабочего.</p>
+    <section className="bayan-book glass-panel" style={{ padding: '3rem', borderRadius: '30px', margin: '2rem auto', maxWidth: '1000px' }}>
+      <h2 className="biblical-header" style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2.5rem' }}>10 Правил Баяностана</h2>
+      <p style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.2rem', color: '#9ca3af' }}>Свод священных догматов для каждого истинного разнорабочего.</p>
       
-      <div className="book-columns" style={{display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '800px', margin: '0 auto'}}>
+      <div className="book-columns" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '850px', margin: '0 auto' }}>
         {bayanRules.map((rule, idx) => (
-          <article key={idx} className="chapter-verse" style={{borderLeft: '4px solid var(--apple-gold)', padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '4px'}}>
-            <strong style={{color: 'var(--apple-gold)'}}>Правило {idx + 1}:</strong> {rule.substring(rule.indexOf('.') + 2)}
+          <article key={idx} className="chapter-verse" style={{
+            borderLeft: '5px solid var(--apple-green)', 
+            padding: '1.5rem 2rem', 
+            background: 'rgba(255, 255, 255, 0.03)', 
+            borderRadius: '15px',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            borderLeftColor: 'var(--apple-green)',
+            transition: 'transform 0.3s ease',
+            cursor: 'default'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateX(10px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateX(0)'}
+          >
+            <strong style={{ color: 'var(--apple-green)', fontSize: '1.1rem', display: 'block', marginBottom: '0.5rem' }}>Правило {idx + 1}:</strong> 
+            <span style={{ fontSize: '1.1rem', color: '#fff', lineHeight: '1.6' }}>{rule.substring(rule.indexOf('.') + 2)}</span>
           </article>
         ))}
       </div>

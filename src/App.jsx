@@ -163,7 +163,7 @@ function App() {
         
         <button 
           onClick={toggleSound} 
-          className="sound-toggle-btn" 
+          className="sound-toggle-btn control-btn" 
           title={settings.sound ? "Выключить святые песнопения" : "Включить святые песнопения"}
           aria-label={settings.sound ? "Выключить звук" : "Включить звук"}
         >
