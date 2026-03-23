@@ -11,7 +11,7 @@ const GelbooruGallery = () => {
       try {
         const apiKey = import.meta.env.VITE_GELBOORU_API_KEY;
         const userId = import.meta.env.VITE_GELBOORU_USER_ID;
-        const targetUrl = encodeURIComponent(`https://gelbooru.com/index.php?page=dapi&s=post&q=index&tags=apple&api_key=${apiKey}&user_id=${userId}&json=1&limit=8`);
+        const targetUrl = encodeURIComponent(`https://gelbooru.com/index.php?page=dapi&s=post&q=index&tags=apple+-rating:explicit&api_key=${apiKey}&user_id=${userId}&json=1&limit=8`);
         const res = await axios.get(`https://api.allorigins.win/raw?url=${targetUrl}`);
         if (res.data && res.data.post) {
           setImages(res.data.post);
