@@ -9,6 +9,9 @@
   --text-main: #f5f5dc;
   --text-muted: #a0a090;
   --border-glass: rgba(212, 175, 55, 0.3);
+  --header-height: 70px;
+  --header-bg: rgba(3, 7, 18, 0.85);
+  --nav-item-width: 160px;
 }
 
 * {
@@ -38,7 +41,7 @@ h1, h2, h3, h4, h5, h6, .biblical-header {
 
 .app-container {
   min-height: 100vh;
-  padding-top: 110px; /* Increased padding to prevent overlap */
+  padding-top: calc(var(--header-height) + 3rem); /* Adaptive safe padding */
 }
 
 /* Glass panel becomes Stone Panel */
@@ -59,9 +62,10 @@ h1, h2, h3, h4, h5, h6, .biblical-header {
   border-color: rgba(55, 235, 61, 0.6);
 }
 
-/* Fix for fixed header to not jump on hover */
-.app-header.glass-panel:hover {
-  transform: none;
+/* Hard fix for the header to never move */
+header.app-header {
+  transform: none !important;
+  transition: none !important;
 }
 
 .text-gradient {
