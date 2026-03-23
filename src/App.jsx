@@ -10,6 +10,7 @@ import BayanBook from './components/BayanBook'
 import ThrowSection from './components/ThrowSection'
 import BayanTimer from './components/BayanTimer'
 import BayanHistoryGenerator from './components/BayanHistoryGenerator'
+import BayanChronicle from './components/BayanChronicle'
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -76,8 +77,8 @@ function App() {
         <header style={{textAlign: 'center', margin: '3rem 0', padding: '0 1rem'}}>
           <h1 className="biblical-header" style={{fontSize: '3.5rem'}}>Священный Баяностан</h1>
           <nav className="tab-nav">
-            <button className={`tab-btn ${activeTab === 'book' ? 'active' : ''}`} onClick={() => setActiveTab('book')}>Завет Баяна</button>
-            <button className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>Летописи (ИИ)</button>
+            <button className={`tab-btn ${activeTab === 'book' ? 'active' : ''}`} onClick={() => setActiveTab('book')}>Правила Баяна</button>
+            <button className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>Летописи Творения</button>
             <button className={`tab-btn ${activeTab === 'throw' ? 'active' : ''}`} onClick={() => setActiveTab('throw')}>Обряд Бросания</button>
             <button className={`tab-btn ${activeTab === 'timer' ? 'active' : ''}`} onClick={() => setActiveTab('timer')}>Часы Забвения</button>
             <button className={`tab-btn ${activeTab === 'wiki' ? 'active' : ''}`} onClick={() => setActiveTab('wiki')}>Ложь и Истина</button>
@@ -89,6 +90,7 @@ function App() {
         <main className="tab-content">
           {activeTab === 'history' && (
             <div style={{animation: 'fade 0.5s'}}>
+              <BayanChronicle />
               <BayanHistoryGenerator />
             </div>
           )}
