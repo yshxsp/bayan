@@ -59,3 +59,16 @@
 .text-center {
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .calculator-section {
+    padding: 1rem;
+  }
+  .calc-inputs input, .calc-inputs button {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+  .calc-results {
+    font-size: 1rem;
+  }
+}

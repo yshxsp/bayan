@@ -33,3 +33,16 @@
 .gallery-img-wrapper:hover img {
   transform: scale(1.1);
 }
+
+@media (max-width: 768px) {
+  .gallery-section {
+    padding: 1rem;
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.8rem;
+  }
+  .gallery-img-wrapper img {
+    height: 140px;
+  }
+}

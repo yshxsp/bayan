@@ -33,3 +33,13 @@
 .hover-effect:hover {
   transform: scale(1.05);
 }
+
+@media (max-width: 768px) {
+  .lore-section {
+    padding: 1.5rem 1rem;
+  }
+  .theories-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

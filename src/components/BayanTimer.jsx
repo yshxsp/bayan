@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import './BayanTimer.css';
 
 const TOTAL_CYCLE = 1488 * 3600 + 8 * 60 + 8; // 1488 hours, 8 mins, 8 secs
@@ -62,7 +63,7 @@ const BayanTimer = () => {
       
       <button className="punish-btn btn-gothic" onClick={triggerExplosion}>[ДЕБАГ] Ускорить Время (Вызвать финал)</button>
 
-      {exploding && (
+      {exploding && createPortal(
         <div className="explosion-overlay">
           <div className="madness-text">
             "у тя какие то слабые фразочки еблан тебя походу матушка на свет родила да и сразу же уранила позже твоя матуха остасывала всем народу причмокивая его хуц а тебя унижали и ставили на колени перед духами и ебали прямо в очко а из этого очка тебе делали стейк который хуяришь 28/9 в итоге ты свое уматузи засунул и лишился детвености ебанатише"
@@ -84,7 +85,8 @@ const BayanTimer = () => {
               🍎
             </div>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
