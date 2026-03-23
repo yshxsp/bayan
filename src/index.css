@@ -59,6 +59,11 @@ h1, h2, h3, h4, h5, h6, .biblical-header {
   border-color: rgba(55, 235, 61, 0.6);
 }
 
+/* Fix for fixed header to not jump on hover */
+.app-header.glass-panel:hover {
+  transform: none;
+}
+
 .text-gradient {
   background: linear-gradient(135deg, var(--gold), var(--apple-green));
   -webkit-background-clip: text;
