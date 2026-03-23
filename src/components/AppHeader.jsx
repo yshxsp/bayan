@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { ChevronDown, User, LogOut, MessageSquare, Shield, Wrench, Zap, Users } from 'lucide-react';
+import { ChevronDown, User, LogOut, MessageSquare, Shield, Wrench, Zap, Users, EyeOff, Wind } from 'lucide-react';
+import ThematicTooltip from './ThematicTooltip';
 import './AppHeader.css';
 
-const AppHeader = ({ activeTab, setActiveTab, user, onLogout, onAuthClick }) => {
-  const [activeCategory, setActiveCategory] = useState(null);
+const optAvatar = (url, size = 64) => {
+  if (!url) return null;
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${size}&h=${size}&fit=cover`;
+};
+
+const AppHeader = ({ activeTab, setActiveTab, user, profile, onLogout, onAuthClick, settings, setSettings }) => {
 
   const categories = [
     {
@@ -58,14 +62,14 @@ const AppHeader = ({ activeTab, setActiveTab, user, onLogout, onAuthClick }) => 
           <div 
             key={cat.id} 
             className="nav-category"
-            onMouseEnter={() => setActiveCategory(cat.id)}
-            onMouseLeave={() => setActiveCategory(null)}
           >
-            <div className={`category-label ${cat.items.some(i => i.id === activeTab) ? 'active' : ''}`}>
-              {cat.icon}
-              <span>{cat.label}</span>
-              <ChevronDown size={14} className="chevron" />
-            </div>
+            <ThematicTooltip text={cat.id === 'tools' ? "Для решения мирских проблем" : cat.label}>
+              <div className={`category-label ${cat.items.some(i => i.id === activeTab) ? 'active' : ''}`}>
+                {cat.icon}
+                <span>{cat.label}</span>
+                <ChevronDown size={14} className="chevron" />
+              </div>
+            </ThematicTooltip>
             
             <div className="category-dropdown glass-panel">
               {cat.items.map((item) => (
@@ -84,19 +88,40 @@ const AppHeader = ({ activeTab, setActiveTab, user, onLogout, onAuthClick }) => 
         ))}
       </nav>
 
+      <div className="header-settings">
+        <button 
+          className={`settings-btn ${settings?.readingMode ? 'active' : ''}`}
+          onClick={() => setSettings('readingMode', !settings.readingMode)}
+          title="Режим чтения (приглушить яблоки)"
+        >
+          <EyeOff size={18} />
+        </button>
+        <button 
+          className={`settings-btn ${settings?.reducedMotion ? 'active' : ''}`}
+          onClick={() => setSettings('reducedMotion', !settings.reducedMotion)}
+          title="Уменьшение движения"
+        >
+          <Wind size={18} />
+        </button>
+      </div>
+
       <div className="header-user-actions">
         {user ? (
           <div className="user-profile-menu">
             <div className="user-info" onClick={() => setActiveTab('profile')}>
-              <div className="user-avatar-small">
-                {user.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} alt="Мой аватар" loading="lazy" />
-                ) : (
-                  <User size={20} />
+              <div className="avatar-container">
+                <div className="user-avatar-small">
+                  {profile?.avatar_url ? (
+                    <img src={optAvatar(profile.avatar_url, 64)} alt="Мой аватар" loading="lazy" />
+                  ) : (
+                    <User size={20} />
+                  )}
+                </div>
+                {settings.presence && (
+                  <span className={`online-indicator ${profile?.status === 'offline' ? 'apple-red' : 'apple-green'}`}></span>
                 )}
-                <span className="online-indicator apple-green"></span>
               </div>
-              <span className="user-name-header">{user.user_metadata?.username || user.email.split('@')[0]}</span>
+              <span className="user-name-header">{profile?.username || user.email.split('@')[0]}</span>
             </div>
             <button className="logout-btn" onClick={onLogout} title="Выйти из гаража">
               <LogOut size={18} />

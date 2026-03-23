@@ -3,7 +3,12 @@ import { supabase } from '../supabaseClient';
 import { User, Camera, Save, CheckCircle, Share2, Check, Copy } from 'lucide-react';
 import './ProfileSection.css';
 
-const ProfileSection = ({ user }) => {
+const optAvatar = (url, size = 300) => {
+  if (!url) return null;
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${size}&h=${size}&fit=cover`;
+};
+
+const ProfileSection = ({ user, onProfileUpdate }) => {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -66,9 +71,11 @@ const ProfileSection = ({ user }) => {
       });
 
       setMessage({ type: 'success', text: 'Профиль успешно покрыт глянцем!' });
+      if (onProfileUpdate) onProfileUpdate();
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       setMessage({ type: 'error', text: error.message });
+      setTimeout(() => setMessage(null), 3000);
     } finally {
       setLoading(false);
     }
@@ -83,24 +90,27 @@ const ProfileSection = ({ user }) => {
           <div className="avatar-wrapper">
             <div className="large-avatar">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Аватар Адепта" loading="lazy" />
+                <img src={optAvatar(avatarUrl, 300)} alt="Аватар Адепта" loading="lazy" />
               ) : (
                 <div className="empty-avatar-placeholder">
                   <User size={40} />
                   <span>Нет Лика</span>
                 </div>
               )}
-              <label className="avatar-upload-overlay" title="Сменить лик">
-                <Camera size={24} />
-                <input 
-                  type="text" 
-                  placeholder="URL иконки" 
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                />
-              </label>
             </div>
-            <div className="online-indicator apple-green" title="В сети Баяностана"></div>
+            
+            <div className="avatar-input-wrapper">
+              <input 
+                type="text" 
+                placeholder="Вставь URL картинки сюда" 
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                className="avatar-url-input-field"
+              />
+              <Camera className="input-icon" size={18} />
+            </div>
+            {/* The user is logically always online when viewing their own profile */}
+            <div className="online-indicator-profile apple-green" title="В сети Баяностана"></div>
           </div>
           <p className="avatar-hint">Вставь прямую ссылку на картинку, червивый прораб!</p>
         </div>

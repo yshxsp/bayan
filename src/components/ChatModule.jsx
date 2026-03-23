@@ -3,6 +3,11 @@ import { supabase } from '../supabaseClient';
 import { Send, User, Loader2, MessageCircle } from 'lucide-react';
 import './ChatModule.css';
 
+const optAvatar = (url, size = 100) => {
+  if (!url) return null;
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${size}&h=${size}&fit=cover`;
+};
+
 const formatSmartDate = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
@@ -142,7 +147,7 @@ const ChatModule = ({ user }) => {
                     {!isOwn && (
                       <div className="sender-avatar">
                         {profile.avatar_url ? (
-                          <img src={profile.avatar_url} alt={profile.username} />
+                          <img src={optAvatar(profile.avatar_url, 80)} alt={profile.username} loading="lazy" />
                         ) : (
                           <div className="avatar-placeholder">🍎</div>
                         )}
