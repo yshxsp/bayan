@@ -18,9 +18,8 @@ import ChatModule from './components/ChatModule'
 import ProfileSection from './components/ProfileSection'
 import { supabase } from './supabaseClient'
 import './components/EntranceStyles.css'
-
 // import audio1 from './assets/audio/audio1.mp3'
-const audio1 = '/assets/audio/audio1.mp3';
+const audio1 = '/audio/audio1.mp3';
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -100,10 +99,10 @@ function App() {
         <div className="entrance-content">
           <h1 className="biblical-header title-glow">Священный Баяностан</h1>
           <div className="entrance-buttons">
-            <button className="gate-btn main-gate" onClick={enterWorld}>Войти во Врата</button>
+            <button className="gate-btn main-gate" onClick={enterWorld} aria-label="Войти во Врата">Войти во Врата</button>
             {!user && (
               <div className="gate-auth-row">
-                <button className="gate-secondary-btn" onClick={() => setIsAuthModalOpen(true)}>Войти / Регистрация</button>
+                <button className="gate-secondary-btn" onClick={() => setIsAuthModalOpen(true)} aria-label="Войти или зарегистрироваться">Войти / Регистрация</button>
               </div>
             )}
           </div>
@@ -130,7 +129,14 @@ function App() {
           onAuthClick={() => setIsAuthModalOpen(true)}
         />
         
-        <button onClick={toggleSound} className="sound-toggle-btn" title={isPlaying ? "Выключить святые песнопения" : "Включить святые песнопения"}>
+        <div className="header-spacer" style={{ height: 'var(--header-height)', marginBottom: '1.5rem' }} />
+        
+        <button 
+          onClick={toggleSound} 
+          className="sound-toggle-btn" 
+          title={isPlaying ? "Выключить святые песнопения" : "Включить святые песнопения"}
+          aria-label={isPlaying ? "Выключить звук" : "Включить звук"}
+        >
           {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
         </button>
         
@@ -140,7 +146,7 @@ function App() {
           onAuthSuccess={() => {}} 
         />
 
-        <main className="tab-content">
+        <main className="tab-content" id="main-content">
           {activeTab === 'history' && (
             <div style={{animation: 'fade 0.5s'}}>
               <BayanChronicle />

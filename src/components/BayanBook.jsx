@@ -15,18 +15,18 @@ const bayanRules = [
 
 const BayanBook = () => {
   return (
-    <div className="bayan-book">
+    <section className="bayan-book">
       <h2 className="biblical-header">10 Правил Баяностана</h2>
       <p style={{textAlign: 'center', marginBottom: '2rem', fontSize: '1.2rem'}}>Свод священных догматов для каждого истинного разнорабочего.</p>
       
       <div className="book-columns" style={{display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '800px', margin: '0 auto'}}>
         {bayanRules.map((rule, idx) => (
-          <div key={idx} className="chapter-verse" style={{borderLeft: '4px solid var(--apple-gold)', padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '4px'}}>
+          <article key={idx} className="chapter-verse" style={{borderLeft: '4px solid var(--apple-gold)', padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '4px'}}>
             <strong style={{color: 'var(--apple-gold)'}}>Правило {idx + 1}:</strong> {rule.substring(rule.indexOf('.') + 2)}
-          </div>
+          </article>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
