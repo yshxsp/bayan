@@ -31,14 +31,22 @@ function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const audioDomRef = useRef(null);
 
+  const fetchProfile = async (userId) => {
+    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (data) setProfile(data);
+  };
+
   useEffect(() => {
     // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) fetchProfile(currentUser.id);
     });
 
     // Listen for auth changes
@@ -54,6 +62,9 @@ function App() {
           username: currentUser.user_metadata?.username || currentUser.email.split('@')[0],
           updated_at: new Date().toISOString()
         });
+        fetchProfile(currentUser.id);
+      } else {
+        setProfile(null);
       }
     });
 
@@ -163,6 +174,7 @@ function App() {
           activeTab={activeTab} 
           setActiveTab={handleTabChange} 
           user={user}
+          profile={profile}
           onLogout={handleLogout}
           onAuthClick={() => {
             playCrunch();
@@ -256,7 +268,7 @@ function App() {
 
           {activeTab === 'profile' && user && (
             <div style={{animation: 'fade 0.5s'}}>
-               <ProfileSection user={user} />
+               <ProfileSection user={user} onProfileUpdate={() => fetchProfile(user.id)} />
             </div>
           )}
         </main>
