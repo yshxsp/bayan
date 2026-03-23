@@ -144,25 +144,25 @@ const BayanChronicle = () => {
         }
         .floating-top-btn {
           position: fixed;
-          bottom: 30px;
-          right: 30px;
+          bottom: 2rem;
+          right: 6.5rem;
           width: 50px;
           height: 50px;
           border-radius: 50%;
-          background: rgba(10, 10, 10, 0.7);
+          background: rgba(17, 17, 17, 0.8);
           backdrop-filter: blur(10px);
-          border: 1px solid rgba(100, 255, 0, 0.3);
+          border: 1px solid var(--apple-green);
           color: var(--apple-green);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          z-index: 1000;
+          z-index: 9999;
           opacity: 0;
           visibility: hidden;
           transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           transform: translateY(20px);
-          box-shadow: 0 0 20px rgba(0,0,0,0.5);
+          box-shadow: 0 0 15px rgba(55, 235, 61, 0.3);
         }
         .floating-top-btn.visible {
           opacity: 1;
