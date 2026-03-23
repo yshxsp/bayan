@@ -18,7 +18,9 @@ import ChatModule from './components/ChatModule'
 import ProfileSection from './components/ProfileSection'
 import { supabase } from './supabaseClient'
 import './components/EntranceStyles.css'
-import audio1 from './assets/audio/audio1.mp3'
+
+// import audio1 from './assets/audio/audio1.mp3'
+const audio1 = '/assets/audio/audio1.mp3';
 
 function App() {
   const [entered, setEntered] = useState(false);
