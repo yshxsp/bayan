@@ -12,13 +12,48 @@ import BayanTimer from './components/BayanTimer'
 import BayanHistoryGenerator from './components/BayanHistoryGenerator'
 import BayanChronicle from './components/BayanChronicle'
 import DonationSection from './components/DonationSection'
+import AuthModal from './components/AuthModal'
+import AppHeader from './components/AppHeader'
+import ChatModule from './components/ChatModule'
+import ProfileSection from './components/ProfileSection'
+import { supabase } from './supabaseClient'
+import './components/EntranceStyles.css'
 import audio1 from './assets/audio/audio1.mp3'
 
 function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const audioDomRef = useRef(null);
+
+  useEffect(() => {
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      if (currentUser) {
+        // Set online status
+        await supabase.from('profiles').update({ status: 'online' }).eq('id', currentUser.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    if (user) {
+      await supabase.from('profiles').update({ status: 'offline' }).eq('id', user.id);
+    }
+    await supabase.auth.signOut();
+  };
 
   const enterWorld = () => {
     setEntered(true);
@@ -62,8 +97,20 @@ function App() {
         </div>
         <div className="entrance-content">
           <h1 className="biblical-header title-glow">Священный Баяностан</h1>
-          <button className="gate-btn" onClick={enterWorld}>Войти во Врата</button>
+          <div className="entrance-buttons">
+            <button className="gate-btn main-gate" onClick={enterWorld}>Войти во Врата</button>
+            {!user && (
+              <div className="gate-auth-row">
+                <button className="gate-secondary-btn" onClick={() => setIsAuthModalOpen(true)}>Войти / Регистрация</button>
+              </div>
+            )}
+          </div>
         </div>
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+          onAuthSuccess={() => {}} 
+        />
       </div>
     );
   }
@@ -72,24 +119,24 @@ function App() {
     <>
       <audio ref={audioDomRef} src={audio1} loop />
       <FallingApples />
-      <div className="app-container" style={{ position: 'relative', zIndex: 10 }}>
+      <div className="app-container" style={{ position: 'relative', zIndex: 10, paddingTop: '80px' }}>
+        <AppHeader 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          user={user}
+          onLogout={handleLogout}
+          onAuthClick={() => setIsAuthModalOpen(true)}
+        />
+        
         <button onClick={toggleSound} className="sound-toggle-btn" title={isPlaying ? "Выключить святые песнопения" : "Включить святые песнопения"}>
           {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
         </button>
-        <header style={{textAlign: 'center', margin: '3rem 0', padding: '0 1rem'}}>
-          <h1 className="biblical-header" style={{fontSize: '3.5rem'}}>Священный Баяностан</h1>
-          <nav className="tab-nav">
-            <button className={`tab-btn ${activeTab === 'book' ? 'active' : ''}`} onClick={() => setActiveTab('book')}>Правила Баяна</button>
-            <button className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>Летописи Творения</button>
-            <button className={`tab-btn ${activeTab === 'ai' ? 'active' : ''}`} onClick={() => setActiveTab('ai')}>Яблочный Интеллект</button>
-            <button className={`tab-btn ${activeTab === 'throw' ? 'active' : ''}`} onClick={() => setActiveTab('throw')}>Обряд Бросания</button>
-            <button className={`tab-btn ${activeTab === 'timer' ? 'active' : ''}`} onClick={() => setActiveTab('timer')}>Часы Забвения</button>
-            <button className={`tab-btn ${activeTab === 'wiki' ? 'active' : ''}`} onClick={() => setActiveTab('wiki')}>Ложь и Истина</button>
-            <button className={`tab-btn ${activeTab === 'calc' ? 'active' : ''}`} onClick={() => setActiveTab('calc')}>Сборы налогов</button>
-            <button className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`} onClick={() => setActiveTab('gallery')}>Святилище Артов</button>
-            <button className={`tab-btn ${activeTab === 'donations' ? 'active' : ''} highlight-tab`} onClick={() => setActiveTab('donations')}>Подношения Баяну</button>
-          </nav>
-        </header>
+        
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+          onAuthSuccess={() => {}} 
+        />
 
         <main className="tab-content">
           {activeTab === 'history' && (
@@ -145,6 +192,18 @@ function App() {
           {activeTab === 'donations' && (
             <div style={{animation: 'fade 0.5s'}}>
                <DonationSection />
+            </div>
+          )}
+
+          {activeTab === 'chat' && (
+            <div style={{animation: 'fade 0.5s'}}>
+               <ChatModule user={user} />
+            </div>
+          )}
+
+          {activeTab === 'profile' && user && (
+            <div style={{animation: 'fade 0.5s'}}>
+               <ProfileSection user={user} />
             </div>
           )}
         </main>

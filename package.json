@@ -16,7 +16,8 @@
     "lucide-react": "^0.395.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "three": "^0.165.0"
+    "three": "^0.165.0",
+    "@supabase/supabase-js": "^2.42.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
