@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Camera, Save, User, Shield, Zap, Sparkles } from 'lucide-react';
+import { User, Camera, Save, CheckCircle, Share2, Check, Copy } from 'lucide-react';
 import './ProfileSection.css';
 
 const ProfileSection = ({ user }) => {
-  const [profile, setProfile] = useState({
-    username: '',
-    full_name: '',
-    avatar_url: '',
-    status: 'online',
-    holy_rank: 'Адепт'
-  });
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [message, setMessage] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyInviteLink = () => {
+    const link = `${window.location.origin}/invite/${user?.id || 'bayan'}`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     getProfile();
@@ -22,147 +24,130 @@ const ProfileSection = ({ user }) => {
   async function getProfile() {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error, status } = await supabase
         .from('profiles')
-        .select(`username, full_name, avatar_url, status`)
+        .select(`username, avatar_url`)
         .eq('id', user.id)
         .single();
 
-      if (error) throw error;
+      if (error && status !== 406) {
+        throw error;
+      }
+
       if (data) {
-        setProfile(data);
+        setUsername(data.username);
         setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
-      console.error('Error loading profile:', error.message);
+      console.error('Error loading user data!', error.message);
     } finally {
       setLoading(false);
     }
   }
 
-  async function updateProfile() {
+  async function updateProfile(e) {
+    e.preventDefault();
+
     try {
-      setUpdating(true);
+      setLoading(true);
       const updates = {
         id: user.id,
-        ...profile,
+        username,
         avatar_url: avatarUrl,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       };
 
       const { error } = await supabase.from('profiles').upsert(updates);
       if (error) throw error;
-      alert('Лик обновлен в Великой Книге!');
+      
+      // Update auth metadata too
+      await supabase.auth.updateUser({
+        data: { username, avatar_url: avatarUrl }
+      });
+
+      setMessage({ type: 'success', text: 'Профиль успешно покрыт глянцем!' });
+      setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      alert(error.message);
+      setMessage({ type: 'error', text: error.message });
     } finally {
-      setUpdating(false);
+      setLoading(false);
     }
   }
 
-  const handleAvatarUpload = async (event) => {
-    try {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
-
-      let { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      setAvatarUrl(publicUrl);
-      
-      // Sync with user metadata immediately for header
-      await supabase.auth.updateUser({
-        data: { avatar_url: publicUrl }
-      });
-
-    } catch (error) {
-      alert('Ошибка при вознесении лика: ' + error.message);
-    }
-  };
-
-  if (loading) return <div className="loading-bible">Читаем свитки судьбы...</div>;
-
   return (
-    <section className="profile-container glass-panel">
-      <div className="profile-header-banner">
+    <div className="profile-container glass-panel">
+      <h2 className="biblical-header profile-title">Личные Покои Адепта</h2>
+      
+      <div className="profile-card">
         <div className="avatar-section">
           <div className="avatar-wrapper">
             <div className="large-avatar">
-              {avatarUrl ? <img src={avatarUrl} alt="Аватар Адепта" loading="lazy" /> : <User size={60} />}
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Аватар Адепта" loading="lazy" />
+              ) : (
+                <div className="empty-avatar-placeholder">
+                  <User size={40} />
+                  <span>Нет Лика</span>
+                </div>
+              )}
               <label className="avatar-upload-overlay" title="Сменить лик">
                 <Camera size={24} />
                 <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleAvatarUpload} 
-                  hidden 
+                  type="text" 
+                  placeholder="URL иконки" 
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
                 />
               </label>
             </div>
-            <div className="rank-badge">
-              <Shield size={14} />
-              <span>{profile.holy_rank || 'Адепт'}</span>
+            <div className="online-indicator apple-green" title="В сети Баяностана"></div>
+          </div>
+          <p className="avatar-hint">Вставь прямую ссылку на картинку, червивый прораб!</p>
+        </div>
+
+        <form onSubmit={updateProfile} className="profile-form">
+          <div className="profile-input-group">
+            <label>Твое Имя в Баяностане</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.slice(0, 20))}
+              placeholder="Как тебя кличут?"
+              required
+            />
+            <small>{username.length}/20 символов</small>
+          </div>
+
+          <div className="profile-stats">
+            <div className="stat-box">
+              <span className="stat-label">Твой Дух</span>
+              <span className="stat-value">Свеж как Яблоко</span>
+            </div>
+            <div className="stat-box">
+              <span className="stat-label">Почта</span>
+              <span className="stat-value">{user.email}</span>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="profile-info-grid">
-        <div className="info-card glass-panel">
-          <label>Имя в Летописях</label>
-          <input 
-            type="text" 
-            value={profile.username || ''} 
-            onChange={(e) => setProfile({...profile, username: e.target.value})}
-            placeholder="Как зовут тебя, путник?"
-          />
-        </div>
-        <div className="info-card glass-panel">
-          <label>Статус Души</label>
-          <div className="status-selector">
-            <span className={`status-dot ${profile.status}`}></span>
-            <select 
-              value={profile.status} 
-              onChange={(e) => setProfile({...profile, status: e.target.value})}
-            >
-              <option value="online">В Глянце (Online)</option>
-              <option value="offline">В Гараже (Offline)</option>
-              <option value="away">На Стройке (Away)</option>
-            </select>
+          <div className="profile-actions-grid">
+            <button type="submit" className="save-profile-btn" disabled={loading}>
+              {loading ? 'Шпаклюю...' : <><Save size={20} /> Зашпаклевать профиль</>}
+            </button>
+            <button type="button" className="invite-btn" onClick={copyInviteLink}>
+              {copied ? <Check size={20} /> : <Share2 size={20} />}
+              {copied ? 'Ссылка скопирована!' : 'Позвать соседа в гараж'}
+            </button>
           </div>
-        </div>
-      </div>
 
-      <div className="achievements-section">
-        <h3 className="biblical-header"><Sparkles size={20} /> Заслуги перед Баяном</h3>
-        <div className="achievements-list">
-          <div className="achievement-item locked">
-            <Zap size={24} />
-            <div className="ach-tooltip">Первая Покрышка: Соберите 100 яблок</div>
-          </div>
-        </div>
+          {message && (
+            <div className={`profile-message ${message.type}`}>
+              <CheckCircle size={18} />
+              <span>{message.text}</span>
+            </div>
+          )}
+        </form>
       </div>
-
-      <button 
-        className="save-profile-btn" 
-        onClick={updateProfile}
-        disabled={updating}
-      >
-        <Save size={20} />
-        {updating ? 'Запечатываем...' : 'Сохранить Истину'}
-      </button>
-    </section>
+    </div>
   );
 };
 

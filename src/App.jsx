@@ -47,7 +47,7 @@ function App() {
           id: currentUser.id, 
           status: 'online',
           username: currentUser.user_metadata?.username || currentUser.email.split('@')[0],
-          updated_at: new Date()
+          updated_at: new Date().toISOString()
         });
       }
     });

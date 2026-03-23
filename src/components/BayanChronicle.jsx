@@ -317,9 +317,18 @@ const BayanChronicle = () => {
         .chronicle-card {
           padding: 3rem;
           position: relative;
-          background: rgba(17, 17, 17, 0.82);
+          background: rgba(17, 17, 17, 0.95); /* More opaque */
           border-left: 4px solid var(--apple-green);
           scroll-margin-top: 100px;
+          border-radius: 12px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .era-text {
+          color: #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          display: block !important;
         }
 
         .era-indicator {
@@ -339,6 +348,12 @@ const BayanChronicle = () => {
         }
 
         @media (max-width: 768px) {
+          .chronicle-card {
+            padding: 1.5rem;
+          }
+          .era-title {
+            font-size: 1.6rem !important;
+          }
           .chronicle-toc-sidebar {
             width: 85%;
             left: 50%;
@@ -348,6 +363,7 @@ const BayanChronicle = () => {
             visibility: hidden;
             pointer-events: none;
             max-height: 80vh;
+            transition: all 0.3s ease; /* Faster transition */
           }
           .chronicle-toc-sidebar.open {
             transform: translate(-50%, -50%) scale(1);
