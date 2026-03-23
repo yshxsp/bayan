@@ -15,31 +15,28 @@ function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('history');
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null);
-
-  useEffect(() => {
-    audioRef.current = new Audio('/audio1.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.5;
-  }, []);
+  const audioDomRef = useRef(null);
 
   const enterWorld = () => {
     setEntered(true);
-    audioRef.current.play().then(() => {
-      setIsPlaying(true);
-    }).catch(e => {
-      console.log('Альтитуда звука блокирована браузером', e);
-      setIsPlaying(false);
-    });
+    if (audioDomRef.current) {
+      audioDomRef.current.volume = 0.5;
+      audioDomRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(e => {
+        console.log('Альтитуда звука блокирована браузером', e);
+        setIsPlaying(false);
+      });
+    }
   };
 
   const toggleSound = () => {
-    if (!audioRef.current) return;
+    if (!audioDomRef.current) return;
     if (isPlaying) {
-      audioRef.current.pause();
+      audioDomRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play();
+      audioDomRef.current.play().catch(() => {});
       setIsPlaying(true);
     }
   };
@@ -70,6 +67,7 @@ function App() {
 
   return (
     <>
+      <audio ref={audioDomRef} src="/audio1.mp3" loop />
       <FallingApples />
       <div className="app-container" style={{ position: 'relative', zIndex: 10 }}>
         <button onClick={toggleSound} className="sound-toggle-btn" title={isPlaying ? "Выключить святые песнопения" : "Включить святые песнопения"}>

@@ -296,14 +296,16 @@ h1, h2, h3, h4, h5, h6, .biblical-header {
 }
 
 /* Global specific styling for Number Input Arrows (spinners) */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 input[type="number"]::-webkit-inner-spin-button, 
 input[type="number"]::-webkit-outer-spin-button {  
-   opacity: 1;
-   cursor: pointer;
-   height: 2em;
-   /* A clever trick to make grey/black system spin buttons look golden */
-   filter: sepia(100%) saturate(300%) hue-rotate(5deg) contrast(200%);
-   background-color: var(--stone);
+   -webkit-appearance: none;
+   margin: 0;
+   display: none;
 }
 
 /* Sound Toggle Button */
