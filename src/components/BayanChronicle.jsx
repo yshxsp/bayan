@@ -130,7 +130,7 @@ const BayanChronicle = () => {
         }
         .chronicle-card {
           transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, background 0.5s ease;
-          scroll-margin-top: 100px;
+          scroll-margin-top: 130px;
         }
         .chronicle-card:hover {
           transform: translateX(10px);
@@ -148,7 +148,7 @@ const BayanChronicle = () => {
           right: 6.5rem;
           width: 50px;
           height: 50px;
-          border-radius: 50%;
+          border-radius: 12px;
           background: rgba(17, 17, 17, 0.8);
           backdrop-filter: blur(10px);
           border: 1px solid var(--apple-green);

@@ -38,7 +38,7 @@ h1, h2, h3, h4, h5, h6, .biblical-header {
 
 .app-container {
   min-height: 100vh;
-  padding-top: 70px; /* Space for fixed header */
+  padding-top: 110px; /* Increased padding to prevent overlap */
 }
 
 /* Glass panel becomes Stone Panel */
@@ -299,7 +299,7 @@ input[type="number"]::-webkit-outer-spin-button {
   border: 1px solid var(--gold);
   color: var(--gold);
   padding: 1rem;
-  border-radius: 50%;
+  border-radius: 12px; /* Rounded square style */
   cursor: pointer;
   z-index: 9999;
   display: flex;
