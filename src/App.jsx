@@ -130,16 +130,18 @@ function App() {
     const LORE_TEXT_2 = "У ТЯ КАКИЕ ТО СЛАБЫЕ ФРАЗОЧКИ ЕБЛАН ТЕБЯ ПОХОДУ МАТУШКА СРАЗУ УРАНИЛА • СТЕЙК 28/9 ВОССТАНАВЛИВАЕТ СИЛЫ • ДУХИ ЖАЖДУТ ВОЗМЕЗДИЯ • ".repeat(15);
     return (
       <div className="entrance-gate">
-        <div className="lore-marquee-container">
-          {Array.from({length: 12}).map((_, i) => (
-            <div 
-              key={i} 
-              className={`lore-marquee-line ${i % 2 !== 0 ? 'reverse' : ''}`} 
-              style={{ animationDuration: `${60 + i * 5}s` }}
-            >
-              {i % 2 === 0 ? LORE_TEXT_1 : LORE_TEXT_2}
-            </div>
-          ))}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+          <div className="lore-marquee-container">
+            {Array.from({length: 12}).map((_, i) => (
+              <div 
+                key={i} 
+                className={`lore-marquee-line ${i % 2 !== 0 ? 'reverse' : ''}`} 
+                style={{ animationDuration: `${60 + i * 5}s` }}
+              >
+                {i % 2 === 0 ? LORE_TEXT_1 : LORE_TEXT_2}
+              </div>
+            ))}
+          </div>
         </div>
         <div className="entrance-content">
           <h1 className="biblical-header title-glow">Священный Баяностан</h1>
@@ -183,6 +185,8 @@ function App() {
           settings={settings}
           setSettings={setSettings}
         />
+        
+        {/* Removed redundant header-spacer as app-container already has padding-top */}
         
         <div className="audio-controls">
           <button 
