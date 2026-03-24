@@ -377,7 +377,9 @@
     border-left: 2px solid rgba(212, 175, 55, 0.4);
     box-shadow: -10px 0 50px rgba(0,0,0,0.8);
     z-index: 2000;
-    overflow-y: auto !important; /* Fix for landscape orientation */
+    overflow-y: auto !important; /* Critical fix for mobile scroll */
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
     overflow-x: hidden;
   }
 

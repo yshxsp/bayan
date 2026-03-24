@@ -119,7 +119,7 @@ section, article {
   justify-content: center;
   gap: 0.8rem;
   padding: 0.8rem 1.8rem;
-  border-radius: 8px;
+  border-radius: 8px !important;
   font-family: 'Cinzel', serif;
   font-weight: 600;
   cursor: pointer;
@@ -164,7 +164,7 @@ section, article {
   justify-content: center;
   gap: 0.8rem;
   padding: 0.8rem 1.8rem;
-  border-radius: 8px;
+  border-radius: 8px !important;
   font-family: 'Cinzel', serif;
   font-weight: 600;
   cursor: pointer;
@@ -193,14 +193,14 @@ section, article {
   height: 100vh;
   height: 100dvh;
   background: #000;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Vertical Center */
-  align-items: center;     /* Horizontal Center */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important; /* Forces vertical centering */
+  align-items: center !important;     /* Horizontal Center */
   z-index: 9999;
-  overflow: hidden;
+  overflow-y: auto !important;
   margin: 0;
-  padding: 5% !important;
+  padding: 2rem !important;
 }
 
 .lore-marquee-container {
@@ -272,6 +272,7 @@ section, article {
   font-family: 'Cinzel', serif;
   cursor: pointer;
   transition: 0.3s;
+  border-radius: 8px !important; /* Match specification */
 }
 .gate-btn:hover {
   background: var(--gold);
@@ -354,19 +355,23 @@ section, article {
   @media (orientation: landscape) and (max-height: 500px) {
     .entrance-gate {
       padding: 1rem !important;
-      overflow-y: auto;
+      overflow-y: auto !important;
+      justify-content: flex-start !important; /* Allow scrolling if too short */
+    }
+    .entrance-content {
+      padding: 2rem 0;
     }
     .title-glow {
-      font-size: clamp(1.8rem, 12vh, 3rem) !important;
-      margin-bottom: 1.5rem;
+      font-size: clamp(1.4rem, 10vh, 2.5rem) !important;
+      margin-bottom: 1.5rem !important;
     }
     .entrance-buttons {
-      flex-direction: row;
-      gap: 1.5rem;
+      flex-direction: row !important;
+      gap: 1rem !important;
     }
     .bayan-btn {
-      padding: 0.6rem 1.2rem;
-      font-size: 0.9rem;
+      padding: 0.5rem 1rem !important;
+      font-size: 0.85rem !important;
     }
   }
 
@@ -396,9 +401,9 @@ input[type="number"] {
 
 input[type="number"]::-webkit-inner-spin-button, 
 input[type="number"]::-webkit-outer-spin-button {  
-  -webkit-appearance: none;
-  margin: 0;
-  display: none;
+   -webkit-appearance: none;
+   margin: 0;
+   display: none;
 }
 
 /* Sound Toggle Button */

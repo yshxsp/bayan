@@ -10,34 +10,10 @@
   gap: 1rem;
 }
 
-.gate-secondary-btn {
-  background: transparent;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  padding: 0.8rem 1.5rem;
-  cursor: pointer;
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s;
-}
-
-.gate-secondary-btn:hover {
-  background: var(--gold);
-  color: black;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-}
-
 .main-gate {
   border-width: 3px !important;
-  font-size: 1.8rem !important;
+  font-size: clamp(1.2rem, 5vw, 1.8rem) !important;
+  min-width: 250px;
 }
 
-/* Glass panel utility */
-.glass-panel {
-  background: rgba(3, 7, 18, 0.6);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
+/* Redundant glass-panel removed to prevent confusion with index.css */
