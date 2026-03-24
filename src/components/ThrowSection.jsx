@@ -1,64 +1,47 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import './ThrowSection.css';
-import { Target, Apple, Zap, Sparkles } from 'lucide-react';
 
 const ThrowSection = () => {
-  const [items, setItems] = useState([]);
-  const [score, setScore] = useState(0);
   const [image, setImage] = useState(null);
+  const [items, setItems] = useState([]);
   const containerRef = useRef(null);
 
-  const handleImageUpload = (e) => {
+  const handleUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => setImage(ev.target.result);
-      reader.readAsDataURL(file);
+      setImage(URL.createObjectURL(file));
     }
   };
 
   const handleThrow = (e) => {
-    if (!image) return;
-    
+    if (!image || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
-    const newItem = {
-      id: Date.now(),
-      x,
-      y,
-      rotation: Math.random() * 360,
-      type: Math.random() > 0.5 ? 'apple' : 'tire'
-    };
-
-    setItems(prev => [...prev, newItem]);
-    setScore(prev => prev + 10);
     
-    // Эффект встряски
-    containerRef.current.classList.add('shaking');
-    setTimeout(() => {
-      containerRef.current.classList.remove('shaking');
-    }, 200);
+    // Apple or tire
+    const isApple = Math.random() > 0.5;
+    const type = isApple ? '🍏' : '🛞';
+    
+    setItems(prev => [...prev, {
+      id: Date.now() + Math.random(),
+      x, y, type,
+      rot: Math.random() * 360,
+      scale: Math.random() * 2 + 1
+    }]);
   };
 
   return (
-    <section className="throw-section">
-      <div className="glass-panel throw-controls">
-        <h2 className="biblical-header text-gradient">Обряд Бросания</h2>
-        <p>Загрузи лик неверного (или червивого прораба) и закидай его святыми артефактами.</p>
-        
-        <label className="upload-target-btn">
-          <Target size={20} />
-          <span>Выбрать Цель</span>
-          <input type="file" accept="image/*" onChange={handleImageUpload} hidden />
+    <div className="glass-panel text-center">
+      <h2 className="biblical-header">Обряд Бросания (Карание)</h2>
+      <p>Загрузи лик грешника и обкидай его яблоками и покрышками на Волгу! Объекты имеют объем и реалистичное падение.</p>
+      
+      {!image && (
+        <label className="upload-label btn-gothic">
+          Воздвигнуть Изображение
+          <input type="file" accept="image/*" onChange={handleUpload} style={{display: 'none'}} />
         </label>
-
-        <div className="score-board">
-          <Sparkles size={20} className="gold" />
-          <span>Святая Ярость: {score}</span>
-        </div>
-      </div>
+      )}
 
       {image && (
         <div className="throw-area" ref={containerRef} onClick={handleThrow}>
@@ -66,26 +49,20 @@ const ThrowSection = () => {
           {items.map(it => (
             <div 
               key={it.id} 
-              className={`thrown-item ${it.type}`}
-              style={{ 
-                left: it.x, 
-                top: it.y, 
-                transform: `translate(-50%, -50%) rotate(${it.rotation}deg)` 
+              className="thrown-item"
+              style={{
+                left: `${it.x}px`, 
+                top: `${it.y}px`, 
+                '--rot': `${it.rot}deg`,
+                '--endScale': it.scale
               }}
             >
-              {it.type === 'apple' ? '🍎' : '🛞'}
+              <div className="item-inner">{it.type}</div>
             </div>
           ))}
         </div>
       )}
-
-      {!image && (
-        <div className="empty-throw glass-panel">
-          <Apple size={60} style={{ opacity: 0.1 }} />
-          <p>Алтарь пуст. Призови кого-нибудь для заклевывания.</p>
-        </div>
-      )}
-    </section>
+    </div>
   );
 };
 

@@ -2,6 +2,7 @@
   max-width: 900px;
   margin: 1rem auto;
   height: calc(100vh - 180px);
+  height: calc(100dvh - 180px);
   display: flex;
   flex-direction: column;
   animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -236,6 +237,7 @@
 @media (max-width: 768px) {
   .bayan-chat-wrapper {
     height: calc(100vh - 120px);
+    height: calc(100dvh - 120px);
     margin: 0;
   }
   
