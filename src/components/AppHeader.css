@@ -45,6 +45,7 @@
   margin-bottom: 0;
   display: flex;
   align-items: center;
+  white-space: nowrap;
 }
 
 .header-nav {
@@ -453,6 +454,9 @@
   }
   
   .header-logo .logo-text {
+    font-size: 1.1rem;
+  }
+  .logo-sparkle {
     font-size: 1.2rem;
   }
 }
