@@ -1,3 +1,11 @@
+.entrance-gate {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
 .entrance-buttons {
   display: flex;
   flex-direction: column;
