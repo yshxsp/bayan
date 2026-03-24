@@ -196,7 +196,7 @@ section, article {
   display: grid !important;
   place-items: center !important; /* Ultimate centering */
   z-index: 9999;
-  overflow-y: auto !important;
+  overflow: auto hidden !important; /* Vertical auto, horizontal hidden */
   margin: 0;
   padding: 1rem !important;
 }
@@ -372,7 +372,7 @@ section, article {
 @media (max-height: 600px) {
   .entrance-gate {
     display: block !important; /* Switch to flow layout to enable proper scrolling */
-    overflow-y: auto !important;
+    overflow: auto hidden !important;
     padding: 2rem 1rem !important;
   }
   
