@@ -366,16 +366,19 @@
     width: 80%;
     max-width: 320px;
     height: 100vh;
+    height: 100dvh;
     background: rgba(10, 15, 30, 0.98);
     backdrop-filter: blur(20px);
     flex-direction: column;
     justify-content: flex-start;
-    padding: 6rem 2rem 2rem;
-    gap: 2rem;
+    padding: 6rem 1.5rem 2rem;
+    gap: 1.5rem;
     transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border-left: 2px solid rgba(212, 175, 55, 0.4);
     box-shadow: -10px 0 50px rgba(0,0,0,0.8);
     z-index: 2000;
+    overflow-y: auto !important; /* Fix for landscape orientation */
+    overflow-x: hidden;
   }
 
   .header-main-content.mobile-open {

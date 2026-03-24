@@ -144,10 +144,10 @@ function App() {
         <div className="entrance-content">
           <h1 className="biblical-header title-glow">Священный Баяностан</h1>
           <div className="entrance-buttons">
-            <button className="gate-btn main-gate" onClick={enterWorld} aria-label="Войти во Врата">Войти во Врата</button>
+            <button className="bayan-btn bayan-btn--primary gate-btn main-gate" onClick={enterWorld} aria-label="Войти во Врата">Войти во Врата</button>
             {!user && (
               <div className="gate-auth-row">
-                <button className="gate-secondary-btn" onClick={() => setIsAuthModalOpen(true)} aria-label="Войти или зарегистрироваться">Войти / Регистрация</button>
+                <button className="bayan-btn bayan-btn--secondary" onClick={() => setIsAuthModalOpen(true)} aria-label="Войти или зарегистрироваться">Войти / Регистрация</button>
               </div>
             )}
           </div>
@@ -183,8 +183,6 @@ function App() {
           settings={settings}
           setSettings={setSettings}
         />
-        
-        {/* Removed redundant header-spacer as app-container already has padding-top */}
         
         <div className="audio-controls">
           <button 
