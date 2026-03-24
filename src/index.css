@@ -198,6 +198,7 @@ section, article {
   z-index: 9999;
   overflow-y: auto !important;
   overflow-x: hidden !important;
+  contain: paint !important; /* Force clipping of massive children */
   margin: 0;
   padding: 1rem !important;
 }
@@ -375,6 +376,7 @@ section, article {
     display: block !important; /* Switch to flow layout to enable proper scrolling */
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    contain: paint !important;
     padding: 2rem 1rem !important;
   }
   
