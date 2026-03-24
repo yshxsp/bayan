@@ -1,70 +1,60 @@
 import React, { useState } from 'react';
-import { 
-  Menu, X, ChevronDown, Monitor, Shield, Zap, Users, 
-  HelpCircle, Sparkles, ScrollText, Timer, Target, Scissors, 
-  Calculator, Image as ImageIcon, Heart, MessageSquare, User
-} from 'lucide-react';
+import { ChevronDown, User, LogOut, MessageSquare, Shield, Wrench, Zap, Users, EyeOff, Wind, Menu, X } from 'lucide-react';
 import ThematicTooltip from './ThematicTooltip';
 import './AppHeader.css';
 
-const AppHeader = ({ 
-  activeTab, 
-  setActiveTab, 
-  user, 
-  profile, 
-  onLogout, 
-  onAuthClick,
-  settings,
-  setSettings 
-}) => {
+const optAvatar = (url, size = 64) => {
+  if (!url) return null;
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${size}&h=${size}&fit=cover`;
+};
+
+const AppHeader = ({ activeTab, setActiveTab, user, profile, onLogout, onAuthClick, settings, setSettings }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const categories = [
     {
-      id: 'history',
+      id: 'holy',
       label: 'Святыни',
-      icon: <Sparkles size={20} />,
+      icon: <Shield size={18} />,
       items: [
-        { id: 'history', label: 'История', icon: <ScrollText size={18} /> },
-        { id: 'chronicle', label: 'Летописи', icon: <Monitor size={18} /> },
-        { id: 'book', label: 'Книга Лиц', icon: <Shield size={18} /> }
+        { id: 'history', label: 'Летописи' },
+        { id: 'book', label: 'Заветы Баяна' },
+        { id: 'wiki', label: 'Ложь и Истина' },
       ]
     },
     {
       id: 'tools',
       label: 'Инструменты',
-      icon: <Zap size={20} />,
+      icon: <Wrench size={18} />,
       items: [
-        { id: 'timer', label: 'Таймер', icon: <Timer size={18} /> },
-        { id: 'throw', label: 'Бросок', icon: <Target size={18} /> },
-        { id: 'ai', label: 'Генератор', icon: <Scissors size={18} /> },
-        { id: 'calc', label: 'Калькулятор', icon: <Calculator size={18} /> }
+        { id: 'ai', label: 'Яблочный Интеллект' },
+        { id: 'calc', label: 'Сборы налогов' },
+        { id: 'timer', label: 'Часы Забвения' },
       ]
     },
     {
       id: 'rituals',
       label: 'Ритуалы',
-      icon: <Target size={20} />,
+      icon: <Zap size={18} />,
       items: [
-        { id: 'gallery', label: 'Галерея', icon: <ImageIcon size={18} /> },
-        { id: 'donations', label: 'Подношения', icon: <Heart size={18} /> },
-        { id: 'wiki', label: 'Вики', icon: <HelpCircle size={18} /> }
+        { id: 'throw', label: 'Обряд Бросания' },
+        { id: 'gallery', label: 'Святилище Артов' },
       ]
     },
     {
       id: 'community',
       label: 'Община',
-      icon: <Users size={20} />,
+      icon: <Users size={18} />,
       items: [
-        { id: 'chat', label: 'Чат', icon: <MessageSquare size={18} /> },
-        { id: 'profile', label: 'Профиль', icon: <User size={18} /> }
+        { id: 'chat', label: 'Чат Адептов' },
+        { id: 'donations', label: 'Подношения Баяну' },
       ]
     }
   ];
 
   return (
     <header className="app-header">
-      <div className="header-logo" onClick={() => setActiveTab('history')}>
+      <div className="header-logo" onClick={() => setActiveTab('history')} style={{ flexShrink: 0 }}>
         <span className="logo-sparkle">🍎</span>
         <h1 className="biblical-header logo-text">Баяностан</h1>
       </div>
@@ -111,53 +101,47 @@ const AppHeader = ({
         </nav>
 
         <div className="header-settings">
-          <ThematicTooltip text={settings.noise ? "Утихомирить Сумщину" : "Услышать зов"}>
-            <button 
-              className={`settings-btn ${settings.noise ? 'active' : ''}`}
-              onClick={() => setSettings('noise', !settings.noise)}
-            >
-              <Zap size={18} />
-            </button>
-          </ThematicTooltip>
-          
-          <ThematicTooltip text={settings.reducedMotion ? "Склеить время" : "Дать волю хаосу"}>
-            <button 
-              className={`settings-btn ${settings.reducedMotion ? 'active' : ''}`}
-              onClick={() => setSettings('reducedMotion', !settings.reducedMotion)}
-            >
-              <Monitor size={18} />
-            </button>
-          </ThematicTooltip>
+          <button 
+            className={`settings-btn ${settings?.readingMode ? 'active' : ''}`}
+            onClick={() => setSettings('readingMode', !settings.readingMode)}
+            title="Режим чтения (приглушить яблоки)"
+          >
+            <EyeOff size={18} />
+          </button>
+          <button 
+            className={`settings-btn ${settings?.reducedMotion ? 'active' : ''}`}
+            onClick={() => setSettings('reducedMotion', !settings.reducedMotion)}
+            title="Уменьшение движения"
+          >
+            <Wind size={18} />
+          </button>
         </div>
 
         <div className="header-user-actions">
           {user ? (
             <div className="user-profile-menu">
-              <div className="user-info" onClick={() => setActiveTab('profile')}>
+              <div className="user-info" onClick={() => { setActiveTab('profile'); setIsMenuOpen(false); }}>
                 <div className="avatar-container">
                   <div className="user-avatar-small">
                     {profile?.avatar_url ? (
-                      <img src={`https://images.weserv.nl/?url=${encodeURIComponent(profile.avatar_url)}&w=64&h=64&fit=cover&mask=circle`} alt="Avatar" />
+                      <img src={optAvatar(profile.avatar_url, 64)} alt="Мой аватар" loading="lazy" />
                     ) : (
                       <User size={20} />
                     )}
                   </div>
-                  <div className={`online-indicator ${profile?.status === 'online' ? 'apple-green' : 'apple-red'}`}>
-                  </div>
+                  {settings.presence && (
+                    <span className={`online-indicator ${profile?.status === 'offline' ? 'apple-red' : 'apple-green'}`}></span>
+                  )}
                 </div>
                 <span className="user-name-header">{profile?.username || user.email.split('@')[0]}</span>
               </div>
-              <button 
-                className="logout-btn" 
-                onClick={onLogout}
-                title="Покинуть обитель"
-              >
-                Выйти
+              <button className="logout-btn" onClick={() => { onLogout(); setIsMenuOpen(false); }} title="Выйти из гаража">
+                <LogOut size={18} />
               </button>
             </div>
           ) : (
-            <button className="header-auth-btn" onClick={onAuthClick}>
-              Войти
+            <button className="header-auth-btn" onClick={() => { onAuthClick(); setIsMenuOpen(false); }}>
+              Войти в Обитель
             </button>
           )}
         </div>
