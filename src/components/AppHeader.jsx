@@ -1,59 +1,69 @@
 import React, { useState } from 'react';
-import { ChevronDown, User, LogOut, MessageSquare, Shield, Wrench, Zap, Users, EyeOff, Wind, Menu, X } from 'lucide-react';
+import { 
+  Menu, X, ChevronDown, Monitor, Shield, Zap, Users, 
+  HelpCircle, Sparkles, ScrollText, Timer, Target, Scissors, 
+  Calculator, Image as ImageIcon, Heart, MessageSquare, User
+} from 'lucide-react';
 import ThematicTooltip from './ThematicTooltip';
 import './AppHeader.css';
 
-const optAvatar = (url, size = 64) => {
-  if (!url) return null;
-  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${size}&h=${size}&fit=cover`;
-};
-
-const AppHeader = ({ activeTab, setActiveTab, user, profile, onLogout, onAuthClick, settings, setSettings }) => {
+const AppHeader = ({ 
+  activeTab, 
+  setActiveTab, 
+  user, 
+  profile, 
+  onLogout, 
+  onAuthClick,
+  settings,
+  setSettings 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const categories = [
     {
-      id: 'holy',
+      id: 'history',
       label: 'Святыни',
-      icon: <Shield size={18} />,
+      icon: <Sparkles size={20} />,
       items: [
-        { id: 'history', label: 'Летописи Творения' },
-        { id: 'book', label: 'Правила Баяна' },
-        { id: 'wiki', label: 'Ложь и Истина' },
+        { id: 'history', label: 'История', icon: <ScrollText size={18} /> },
+        { id: 'chronicle', label: 'Летописи', icon: <Monitor size={18} /> },
+        { id: 'book', label: 'Книга Лиц', icon: <Shield size={18} /> }
       ]
     },
     {
       id: 'tools',
       label: 'Инструменты',
-      icon: <Wrench size={18} />,
+      icon: <Zap size={20} />,
       items: [
-        { id: 'ai', label: 'Яблочный Интеллект' },
-        { id: 'calc', label: 'Сборы налогов' },
-        { id: 'timer', label: 'Часы Забвения' },
+        { id: 'timer', label: 'Таймер', icon: <Timer size={18} /> },
+        { id: 'throw', label: 'Бросок', icon: <Target size={18} /> },
+        { id: 'ai', label: 'Генератор', icon: <Scissors size={18} /> },
+        { id: 'calc', label: 'Калькулятор', icon: <Calculator size={18} /> }
       ]
     },
     {
       id: 'rituals',
       label: 'Ритуалы',
-      icon: <Zap size={18} />,
+      icon: <Target size={20} />,
       items: [
-        { id: 'throw', label: 'Обряд Бросания' },
-        { id: 'gallery', label: 'Святилище Артов' },
+        { id: 'gallery', label: 'Галерея', icon: <ImageIcon size={18} /> },
+        { id: 'donations', label: 'Подношения', icon: <Heart size={18} /> },
+        { id: 'wiki', label: 'Вики', icon: <HelpCircle size={18} /> }
       ]
     },
     {
       id: 'community',
       label: 'Община',
-      icon: <Users size={18} />,
+      icon: <Users size={20} />,
       items: [
-        { id: 'chat', label: 'Чат Адептов' },
-        { id: 'donations', label: 'Подношения Баяну' },
+        { id: 'chat', label: 'Чат', icon: <MessageSquare size={18} /> },
+        { id: 'profile', label: 'Профиль', icon: <User size={18} /> }
       ]
     }
   ];
 
   return (
-    <header className="app-header glass-panel">
+    <header className="app-header">
       <div className="header-logo" onClick={() => setActiveTab('history')}>
         <span className="logo-sparkle">🍎</span>
         <h1 className="biblical-header logo-text">Баяностан</h1>
@@ -82,7 +92,7 @@ const AppHeader = ({ activeTab, setActiveTab, user, profile, onLogout, onAuthCli
                 </div>
               </ThematicTooltip>
               
-              <div className="category-dropdown glass-panel">
+              <div className="category-dropdown">
                 {cat.items.map((item) => (
                   <button
                     key={item.id}
@@ -101,47 +111,53 @@ const AppHeader = ({ activeTab, setActiveTab, user, profile, onLogout, onAuthCli
         </nav>
 
         <div className="header-settings">
-          <button 
-            className={`settings-btn ${settings?.readingMode ? 'active' : ''}`}
-            onClick={() => setSettings('readingMode', !settings.readingMode)}
-            title="Режим чтения (приглушить яблоки)"
-          >
-            <EyeOff size={18} />
-          </button>
-          <button 
-            className={`settings-btn ${settings?.reducedMotion ? 'active' : ''}`}
-            onClick={() => setSettings('reducedMotion', !settings.reducedMotion)}
-            title="Уменьшение движения"
-          >
-            <Wind size={18} />
-          </button>
+          <ThematicTooltip text={settings.noise ? "Утихомирить Сумщину" : "Услышать зов"}>
+            <button 
+              className={`settings-btn ${settings.noise ? 'active' : ''}`}
+              onClick={() => setSettings('noise', !settings.noise)}
+            >
+              <Zap size={18} />
+            </button>
+          </ThematicTooltip>
+          
+          <ThematicTooltip text={settings.reducedMotion ? "Склеить время" : "Дать волю хаосу"}>
+            <button 
+              className={`settings-btn ${settings.reducedMotion ? 'active' : ''}`}
+              onClick={() => setSettings('reducedMotion', !settings.reducedMotion)}
+            >
+              <Monitor size={18} />
+            </button>
+          </ThematicTooltip>
         </div>
 
         <div className="header-user-actions">
           {user ? (
             <div className="user-profile-menu">
-              <div className="user-info" onClick={() => { setActiveTab('profile'); setIsMenuOpen(false); }}>
+              <div className="user-info" onClick={() => setActiveTab('profile')}>
                 <div className="avatar-container">
                   <div className="user-avatar-small">
                     {profile?.avatar_url ? (
-                      <img src={optAvatar(profile.avatar_url, 64)} alt="Мой аватар" loading="lazy" />
+                      <img src={`https://images.weserv.nl/?url=${encodeURIComponent(profile.avatar_url)}&w=64&h=64&fit=cover&mask=circle`} alt="Avatar" />
                     ) : (
                       <User size={20} />
                     )}
                   </div>
-                  {settings.presence && (
-                    <span className={`online-indicator ${profile?.status === 'offline' ? 'apple-red' : 'apple-green'}`}></span>
-                  )}
+                  <div className={`online-indicator ${profile?.status === 'online' ? 'apple-green' : 'apple-red'}`}>
+                  </div>
                 </div>
                 <span className="user-name-header">{profile?.username || user.email.split('@')[0]}</span>
               </div>
-              <button className="logout-btn" onClick={() => { onLogout(); setIsMenuOpen(false); }} title="Выйти из гаража">
-                <LogOut size={18} />
+              <button 
+                className="logout-btn" 
+                onClick={onLogout}
+                title="Покинуть обитель"
+              >
+                Выйти
               </button>
             </div>
           ) : (
-            <button className="header-auth-btn" onClick={() => { onAuthClick(); setIsMenuOpen(false); }}>
-              Войти в Обитель
+            <button className="header-auth-btn" onClick={onAuthClick}>
+              Войти
             </button>
           )}
         </div>
