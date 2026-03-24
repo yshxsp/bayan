@@ -193,14 +193,12 @@ section, article {
   height: 100vh;
   height: 100dvh;
   background: #000;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important; /* Forces vertical centering */
-  align-items: center !important;     /* Horizontal Center */
+  display: grid !important;
+  place-items: center !important; /* Ultimate centering */
   z-index: 9999;
   overflow-y: auto !important;
   margin: 0;
-  padding: 2rem !important;
+  padding: 1rem !important;
 }
 
 .lore-marquee-container {
@@ -356,22 +354,30 @@ section, article {
     .entrance-gate {
       padding: 1rem !important;
       overflow-y: auto !important;
-      justify-content: flex-start !important; /* Allow scrolling if too short */
+      display: block !important; /* Scrollable flow in landscape */
     }
     .entrance-content {
       padding: 2rem 0;
+      margin: 0 auto;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     .title-glow {
-      font-size: clamp(1.4rem, 10vh, 2.5rem) !important;
-      margin-bottom: 1.5rem !important;
+      font-size: clamp(1.4rem, 10vh, 2.2rem) !important;
+      margin-bottom: 1.2rem !important;
     }
     .entrance-buttons {
       flex-direction: row !important;
       gap: 1rem !important;
+      padding-bottom: 2rem;
     }
     .bayan-btn {
       padding: 0.5rem 1rem !important;
-      font-size: 0.85rem !important;
+      font-size: 0.8rem !important;
+      height: auto !important;
     }
   }
 
