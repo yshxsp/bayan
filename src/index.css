@@ -312,6 +312,7 @@ section, article {
    MOBILE RESPONSIVENESS
    ========================= */
 @media (max-width: 768px) {
+  /* Portrait optimizations */
   .biblical-header {
     font-size: 2rem !important;
   }
@@ -349,38 +350,6 @@ section, article {
     column-gap: 0;
   }
 
-  /* Landscape Support for Small Screens */
-  @media (orientation: landscape) and (max-height: 500px) {
-    .entrance-gate {
-      padding: 1rem !important;
-      overflow-y: auto !important;
-      display: block !important; /* Scrollable flow in landscape */
-    }
-    .entrance-content {
-      padding: 2rem 0;
-      margin: 0 auto;
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .title-glow {
-      font-size: clamp(1.4rem, 10vh, 2.2rem) !important;
-      margin-bottom: 1.2rem !important;
-    }
-    .entrance-buttons {
-      flex-direction: row !important;
-      gap: 1rem !important;
-      padding-bottom: 2rem;
-    }
-    .bayan-btn {
-      padding: 0.5rem 1rem !important;
-      font-size: 0.8rem !important;
-      height: auto !important;
-    }
-  }
-
   /* Override Timer specifically for mobile safety */
   .time-val {
     font-size: 3rem !important;
@@ -396,6 +365,41 @@ section, article {
   .madness-text {
     font-size: 1.2rem !important;
     max-width: 95% !important;
+  }
+}
+
+/* Landscape/Short Viewport Support (Catch-all for height-constrained devices) */
+@media (max-height: 600px) {
+  .entrance-gate {
+    display: block !important; /* Switch to flow layout to enable proper scrolling */
+    overflow-y: auto !important;
+    padding: 2rem 1rem !important;
+  }
+  
+  .entrance-content {
+    margin: 3rem auto !important;
+    min-height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    position: relative !important;
+  }
+
+  .title-glow {
+    font-size: clamp(1.4rem, 12vh, 2.2rem) !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .entrance-buttons {
+    flex-direction: row !important;
+    gap: 1.5rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  .bayan-btn {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.9rem !important;
+    white-space: nowrap !important;
   }
 }
 
