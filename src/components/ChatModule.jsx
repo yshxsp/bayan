@@ -42,15 +42,19 @@ const ChatModule = ({ user }) => {
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
         // Fetch the author's profile details to ensure UI has latest username/avatar
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('username, avatar_url, status')
-          .eq('id', payload.new.user_id)
-          .single();
+        let profileData = null;
+        if (payload.new.user_id) {
+          const { data } = await supabase
+            .from('profiles')
+            .select('username, avatar_url, status, is_admin')
+            .eq('id', payload.new.user_id)
+            .single();
+          profileData = data;
+        }
         
         const completeMessage = {
           ...payload.new,
-          profiles: profileData || { username: 'Безликий Прораб', avatar_url: null, status: 'offline' }
+          profiles: profileData || (payload.new.user_id ? { username: 'Безликий Прораб', avatar_url: null, status: 'offline' } : { username: 'ЮРИЙ БАЯНОВ', avatar_url: null, is_admin: true })
         };
         
         setMessages((current) => {
@@ -84,7 +88,8 @@ const ChatModule = ({ user }) => {
           profiles (
             username,
             avatar_url,
-            status
+            status,
+            is_admin
           )
         `)
         .order('created_at', { ascending: true })
@@ -140,23 +145,32 @@ const ChatModule = ({ user }) => {
             <div className="messages-list">
               {messages.map((msg) => {
                 const isOwn = user && msg.user_id === user.id;
-                const profile = msg.profiles || { username: 'Безликий' };
+                const isBayan = !msg.user_id;
+                const profile = msg.profiles || (isBayan ? { username: 'ЮРИЙ БАЯНОВ', avatar_url: null, is_admin: true } : { username: 'Безликий' });
                 
                 return (
-                  <div key={msg.id} className={`message-item ${isOwn ? 'own' : ''}`}>
+                  <div key={msg.id} className={`message-item ${isOwn ? 'own' : ''} ${isBayan ? 'system-bayan' : ''} ${profile.is_admin ? 'admin-msg' : ''}`}>
                     {!isOwn && (
                       <div className="sender-avatar">
-                        {profile.avatar_url ? (
+                        {isBayan ? (
+                          <div className="avatar-placeholder bayan-avatar">👑</div>
+                        ) : profile.avatar_url ? (
                           <img src={optAvatar(profile.avatar_url, 80)} alt={profile.username} loading="lazy" />
                         ) : (
                           <div className="avatar-placeholder">🍎</div>
                         )}
-                        <div className={`status-dot ${profile.status === 'online' ? 'online' : ''}`} />
+                        {!isBayan && <div className={`status-dot ${profile.status === 'online' ? 'online' : ''}`} />}
                       </div>
                     )}
                     
                     <div className="message-bubble">
-                      {!isOwn && <div className="sender-name">{profile.username}</div>}
+                      {!isOwn && (
+                        <div className="sender-name-row">
+                          <span className="sender-name">{profile.username}</span>
+                          {isBayan && <span className="bayan-badge">АРХИ-ПРОРАБ</span>}
+                          {profile.is_admin && !isBayan && <span className="admin-badge">АДМИН</span>}
+                        </div>
+                      )}
                       <div className="message-content">{msg.content}</div>
                       <div className="message-time">{formatSmartDate(msg.created_at)}</div>
                     </div>
@@ -190,7 +204,7 @@ const ChatModule = ({ user }) => {
             </>
           ) : (
             <div className="chat-locked-prompt">
-               Зашпаклюйся в Вратах, чтобы базарить с мужиками!
+               ЗАШПАКЛЮЙСЯ В ВРАТАХ, ЧТОБЫ БАЗАРИТЬ С МУЖИКАМИ!
             </div>
           )}
         </form>
