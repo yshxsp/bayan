@@ -427,22 +427,25 @@
   .category-dropdown {
     position: static;
     transform: none;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
     width: 100%;
-    background: transparent;
-    border: none;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.1);
     box-shadow: none;
-    margin-top: 0;
-    padding-left: 2rem;
-    display: block; /* Visible in mobile menu */
-  padding-left: 2rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem !important;
+    display: flex; /* Ensure it's layouted */
+    flex-direction: column;
+    gap: 0.2rem;
   }
 
   .nav-category:hover .category-dropdown {
     display: flex;
     transform: none;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .header-settings {

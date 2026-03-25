@@ -94,7 +94,7 @@ const BayanChronicle = () => {
               onClick={(e) => handleScrollTo(e, event.id)}
               className="toc-item-link"
             >
-              <span className="toc-year-tag">{event.year.split(' ')[0]}</span>
+              <span className="toc-year-tag">{event.year}</span>
               <span className="toc-label-text">{event.title}</span>
             </a>
           ))}
