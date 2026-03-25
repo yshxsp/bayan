@@ -35,12 +35,19 @@ const ChatModule = ({ user }) => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    console.log("ChatModule: MOUNTED. User state:", !!user);
+    if (!supabase) {
+       console.error("ChatModule: Supabase client is missing!");
+    }
+    
     fetchMessages();
     
     // Subscribe to realtime updates
+    console.log("ChatModule: Initializing subscription to public:messages...");
     const channel = supabase
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
+        console.log("ChatModule: Realtime payload received:", payload);
         // Fetch the author's profile details to ensure UI has latest username/avatar
         let profileData = null;
         if (payload.new.user_id) {
@@ -63,9 +70,12 @@ const ChatModule = ({ user }) => {
           return [...current, completeMessage];
         });
       })
-      .subscribe();
+      .subscribe((status) => {
+         console.log("ChatModule: Realtime subscription status:", status);
+      });
 
     return () => {
+      console.log("ChatModule: UNMOUNTING.");
       supabase.removeChannel(channel);
     };
   }, []);
@@ -81,6 +91,7 @@ const ChatModule = ({ user }) => {
   const fetchMessages = async () => {
     try {
       setLoading(true);
+      console.log("ChatModule: Fetching messages...");
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -95,7 +106,12 @@ const ChatModule = ({ user }) => {
         .order('created_at', { ascending: true })
         .limit(100);
 
-      if (error) throw error;
+      if (error) {
+        console.error("ChatModule: Fetch error DETAILS:", error);
+        throw error;
+      }
+      
+      console.log("ChatModule: Messages successfully loaded, count:", data?.length);
       setMessages(data || []);
     } catch (error) {
       console.error('Ошибка в архивах гаража:', error);
@@ -112,11 +128,15 @@ const ChatModule = ({ user }) => {
     setNewMessage(''); // Clear input optimistically
 
     try {
+      console.log("ChatModule: Sending message...", messageText);
       const { error } = await supabase
         .from('messages')
         .insert([{ content: messageText, user_id: user.id }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("ChatModule: Send error:", error);
+        throw error;
+      }
     } catch (error) {
       console.error('Баян отклонил указку:', error);
       setNewMessage(messageText); // Restore on failure
